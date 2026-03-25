@@ -95,6 +95,11 @@ export default function ContactHub() {
     const elementTop = formContainerRef.current?.getBoundingClientRect().top;
     if (elementTop === undefined) return;
 
+    const htmlEl = document.documentElement;
+    const previousScrollBehavior = htmlEl.style.scrollBehavior;
+    // Avoid combining CSS smooth scroll with custom RAF animation.
+    htmlEl.style.scrollBehavior = "auto";
+
     const navOffset = 96;
     const targetY = startY + elementTop - navOffset;
     const distance = targetY - startY;
@@ -113,12 +118,17 @@ export default function ContactHub() {
 
       if (progress < 1) {
         rafId = window.requestAnimationFrame(animate);
+      } else {
+        htmlEl.style.scrollBehavior = previousScrollBehavior;
       }
     };
 
     rafId = window.requestAnimationFrame(animate);
 
-    return () => window.cancelAnimationFrame(rafId);
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      htmlEl.style.scrollBehavior = previousScrollBehavior;
+    };
   }, [showForm]);
 
   return (
