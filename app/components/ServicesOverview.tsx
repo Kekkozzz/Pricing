@@ -1,3 +1,5 @@
+"use client";
+
 import { Globe, ShoppingBag, Zap, TrendingUp } from "lucide-react";
 import { categories } from "../data/packages";
 
@@ -9,6 +11,12 @@ const icons: Record<string, React.ReactNode> = {
 };
 
 export default function ServicesOverview() {
+  const handleClick = (index: number) => {
+    window.dispatchEvent(
+      new CustomEvent("service-selected", { detail: index })
+    );
+  };
+
   return (
     <section id="servizi" className="relative py-24 md:py-32">
       <div className="mx-auto max-w-6xl px-6">
@@ -24,11 +32,11 @@ export default function ServicesOverview() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {categories.map((cat) => (
+          {categories.map((cat, i) => (
             <a
               key={cat.id}
               href="#pricing"
-              data-tab={cat.id}
+              onClick={() => handleClick(i)}
               className="group relative border border-border bg-surface/30 p-8 md:p-10 hover:border-accent/30 hover:bg-surface/60 transition-all duration-500"
             >
               <div className="flex items-start justify-between mb-6">

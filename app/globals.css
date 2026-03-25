@@ -45,9 +45,32 @@
   scrollbar-color: var(--border) transparent;
 }
 
+/* Wizard step scroll area */
+.wizard-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+.wizard-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.wizard-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.wizard-scroll::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.wizard-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 6rem;
 }
 
 body {
