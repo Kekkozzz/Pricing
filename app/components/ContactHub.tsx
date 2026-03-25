@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FileText, Calendar, MessageCircle, Mail } from "lucide-react";
 import { siteConfig } from "../data/config";
+
+function easeInOutCubic(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
 
 export default function ContactHub() {
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
@@ -82,6 +86,40 @@ export default function ContactHub() {
   ];
 
   const [showForm, setShowForm] = useState(false);
+  const formContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showForm) return;
+
+    const startY = window.scrollY;
+    const elementTop = formContainerRef.current?.getBoundingClientRect().top;
+    if (elementTop === undefined) return;
+
+    const navOffset = 96;
+    const targetY = startY + elementTop - navOffset;
+    const distance = targetY - startY;
+    const duration = 900;
+    const startTime = performance.now();
+    let rafId = 0;
+
+    const animate = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeInOutCubic(progress);
+
+      window.scrollTo({
+        top: startY + distance * eased,
+      });
+
+      if (progress < 1) {
+        rafId = window.requestAnimationFrame(animate);
+      }
+    };
+
+    rafId = window.requestAnimationFrame(animate);
+
+    return () => window.cancelAnimationFrame(rafId);
+  }, [showForm]);
 
   return (
     <section id="contatti" className="relative py-24 md:py-32">
@@ -153,7 +191,10 @@ export default function ContactHub() {
 
         {/* Inline form */}
         {showForm && (
-          <div className="border border-border bg-surface/30 p-8 md:p-10 animate-fade-up">
+          <div
+            ref={formContainerRef}
+            className="border border-border bg-surface/30 p-8 md:p-10 animate-fade-up"
+          >
             {formStatus === "sent" ? (
               <div className="text-center py-8">
                 <p className="font-display text-2xl mb-2">Grazie!</p>

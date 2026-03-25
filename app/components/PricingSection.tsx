@@ -16,18 +16,15 @@ import type { ServiceCategory, Tier } from "../data/packages";
 import { siteConfig } from "../data/config";
 import WizardScene from "./WizardScene";
 
+function easeInOutCubic(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
 const iconMap: Record<string, React.ReactNode> = {
   globe: <Globe size={20} strokeWidth={1.5} />,
   "shopping-bag": <ShoppingBag size={20} strokeWidth={1.5} />,
   zap: <Zap size={20} strokeWidth={1.5} />,
   "trending-up": <TrendingUp size={20} strokeWidth={1.5} />,
-};
-
-const iconMapLarge: Record<string, React.ReactNode> = {
-  globe: <Globe size={48} strokeWidth={1} />,
-  "shopping-bag": <ShoppingBag size={48} strokeWidth={1} />,
-  zap: <Zap size={48} strokeWidth={1} />,
-  "trending-up": <TrendingUp size={48} strokeWidth={1} />,
 };
 
 type TierKey = "base" | "pro" | "premium";
@@ -63,15 +60,27 @@ export default function PricingSection() {
   const stepRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
     const handler = (e: Event) => {
       const index = (e as CustomEvent).detail as number;
       setCatIndex(index);
       setTierKey(null);
       setAddOns([]);
-      goToStep(2);
+      setSlideDir("left");
+      setTransitioning(true);
+      timeoutId = setTimeout(() => {
+        setStep(2);
+        setTransitioning(false);
+      }, 200);
     };
+
     window.addEventListener("service-selected", handler);
-    return () => window.removeEventListener("service-selected", handler);
+
+    return () => {
+      window.removeEventListener("service-selected", handler);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   const cat: ServiceCategory | null =
@@ -129,6 +138,36 @@ export default function PricingSection() {
   >("idle");
   const [showForm, setShowForm] = useState(false);
 
+  useEffect(() => {
+    if (!showForm || step !== 5 || !stepRef.current) return;
+
+    const container = stepRef.current;
+    const startY = container.scrollTop;
+    const targetY = container.scrollHeight;
+    const distance = targetY - startY;
+    const duration = 700;
+    const startTime = performance.now();
+    let rafId = 0;
+
+    const animate = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeInOutCubic(progress);
+
+      container.scrollTo({
+        top: startY + distance * eased,
+      });
+
+      if (progress < 1) {
+        rafId = window.requestAnimationFrame(animate);
+      }
+    };
+
+    rafId = window.requestAnimationFrame(animate);
+
+    return () => window.cancelAnimationFrame(rafId);
+  }, [showForm, step]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormStatus("sending");
@@ -155,7 +194,7 @@ export default function PricingSection() {
     : "opacity-100 translate-x-0";
 
   // --- LEFT PANEL CONTENT (text below 3D) ---
-  function LeftPanelContent() {
+  function renderLeftPanelContent() {
     return (
         <div className="w-full text-center px-8 py-6 transition-all duration-500">
           {!cat ? (
@@ -231,7 +270,7 @@ export default function PricingSection() {
   }
 
   // --- MOBILE HEADER ---
-  function MobileHeader() {
+  function renderMobileHeader() {
     if (!cat) return null;
     return (
       <div className="md:hidden sticky top-16 z-10 bg-background/90 backdrop-blur-xl border-b border-border px-6 py-4">
@@ -255,7 +294,7 @@ export default function PricingSection() {
   }
 
   // --- STEPS ---
-  function StepService() {
+  function renderStepService() {
     return (
       <>
         <p className="text-[10px] uppercase tracking-[0.2em] text-accent mb-2 font-mono">
@@ -311,7 +350,7 @@ export default function PricingSection() {
     );
   }
 
-  function StepTier() {
+  function renderStepTier() {
     if (!cat) return null;
     return (
       <>
@@ -357,7 +396,7 @@ export default function PricingSection() {
     );
   }
 
-  function StepFeatures() {
+  function renderStepFeatures() {
     if (!cat || !tierKey || !tier) return null;
     return (
       <>
@@ -387,7 +426,7 @@ export default function PricingSection() {
     );
   }
 
-  function StepAddOns() {
+  function renderStepAddOns() {
     if (!cat) return null;
     return (
       <>
@@ -441,7 +480,7 @@ export default function PricingSection() {
     );
   }
 
-  function StepContact() {
+  function renderStepContact() {
     const contactChannels = [
       {
         icon: <FileText size={20} strokeWidth={1.5} />,
@@ -584,8 +623,14 @@ export default function PricingSection() {
     );
   }
 
-  const steps = [StepService, StepTier, StepFeatures, StepAddOns, StepContact];
-  const CurrentStep = steps[step - 1];
+  const steps = [
+    renderStepService,
+    renderStepTier,
+    renderStepFeatures,
+    renderStepAddOns,
+    renderStepContact,
+  ];
+  const currentStep = steps[step - 1];
 
   return (
     <section id="pricing" className="relative py-24 md:py-32">
@@ -611,10 +656,10 @@ export default function PricingSection() {
             </div>
             {/* Text / Summary area */}
             <div className="flex-1 flex items-center justify-center bg-surface/30 border-t border-border">
-              <LeftPanelContent />
+              {renderLeftPanelContent()}
             </div>
           </div>
-          <MobileHeader />
+          {renderMobileHeader()}
 
           <div className="flex flex-col p-8 md:p-12 lg:p-14 h-full overflow-hidden">
             <div className="hidden md:block shrink-0">
@@ -626,7 +671,7 @@ export default function PricingSection() {
               ref={stepRef}
               className={`flex-1 overflow-y-auto min-h-0 pr-4 wizard-scroll transition-all duration-200 ease-out ${stepClasses}`}
             >
-              <CurrentStep />
+              {currentStep()}
             </div>
 
             {/* Navigation — always at bottom */}

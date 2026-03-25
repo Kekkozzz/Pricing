@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { siteConfig } from "../data/config";
 
 export default function Hero() {
@@ -42,21 +43,18 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right — Stats */}
-          <div className="animate-fade-up stagger-5 grid grid-cols-2 gap-4">
-            {siteConfig.stats.map((stat, i) => (
-              <div
-                key={i}
-                className="group border border-border bg-surface/50 p-6 md:p-8 hover:border-accent/30 transition-all duration-500"
-              >
-                <div className="font-display text-3xl md:text-4xl text-foreground mb-2 group-hover:text-accent transition-colors duration-500">
-                  {stat.value}
-                </div>
-                <div className="text-[10px] uppercase tracking-[0.2em] text-muted">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+          {/* Right — Hero image */}
+          <div className="animate-fade-up stagger-5">
+            <div className="relative w-full max-w-xl mx-auto aspect-4/3  overflow-hidden">
+              <Image
+                src="/hero.png"
+                alt="Anteprima del sito"
+                fill
+                sizes="(min-width: 1024px) 40vw, (min-width: 768px) 45vw, 90vw"
+                className="object-cover"
+                priority
+              />
+            </div>
           </div>
         </div>
       </div>

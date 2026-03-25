@@ -9,7 +9,7 @@ export default function Navbar() {
   const links = [
     { label: "Servizi", href: "#servizi" },
     { label: "Pricing", href: "#pricing" },
-    { label: "Contatti", href: "#pricing" },
+    { label: "Contatti", href: "#contatti" },
   ];
 
   return (
