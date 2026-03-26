@@ -33,11 +33,20 @@ type AIPreviewStepProps = {
   tierName: string;
   features: string[];
   addOns: string[];
+  initialData?: AIFormData | null;
   onProceed: () => void;
   onStateChange?: (state: { canGenerate: boolean; isGenerating: boolean; isComplete: boolean }) => void;
   onFormDataChange?: (data: AIFormData) => void;
   triggerGenerate?: number;
 };
+
+function deriveInitialSectorState(initialSector?: string) {
+  if (!initialSector) return { sector: "", customSector: "" };
+  if (SECTORS.includes(initialSector)) {
+    return { sector: initialSector, customSector: "" };
+  }
+  return { sector: "Altro", customSector: initialSector };
+}
 
 export default function AIPreviewStep({
   serviceName,
@@ -45,18 +54,21 @@ export default function AIPreviewStep({
   tierName,
   features,
   addOns,
+  initialData,
   onProceed,
   onStateChange,
   onFormDataChange,
   triggerGenerate,
 }: AIPreviewStepProps) {
-  const [businessName, setBusinessName] = useState("");
-  const [sector, setSector] = useState("");
-  const [customSector, setCustomSector] = useState("");
-  const [style, setStyle] = useState("");
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [description, setDescription] = useState("");
-  const [referenceUrls, setReferenceUrls] = useState("");
+  const initialSectorState = deriveInitialSectorState(initialData?.sector);
+
+  const [businessName, setBusinessName] = useState(initialData?.businessName ?? "");
+  const [sector, setSector] = useState(initialSectorState.sector);
+  const [customSector, setCustomSector] = useState(initialSectorState.customSector);
+  const [style, setStyle] = useState(initialData?.style ?? "");
+  const [selectedColors, setSelectedColors] = useState<string[]>(initialData?.colors ?? []);
+  const [description, setDescription] = useState(initialData?.description ?? "");
+  const [referenceUrls, setReferenceUrls] = useState(initialData?.referenceUrls ?? "");
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
   const [state, setState] = useState<GenerationState>("idle");

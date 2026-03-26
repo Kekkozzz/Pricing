@@ -522,6 +522,7 @@ export default function PricingSection() {
         tierName={tier.name}
         features={featureNames}
         addOns={addOnNames}
+        initialData={aiFormData}
         onProceed={() => goToStep(step + 1)}
         onStateChange={setAiState}
         onFormDataChange={setAiFormData}
