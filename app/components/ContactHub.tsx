@@ -80,7 +80,7 @@ export default function ContactHub() {
         </p>
 
         {/* Testimonial carousel */}
-        <div className="relative mb-12 min-h-40 flex items-center justify-center">
+        <div className="relative mb-12 min-h-40 flex items-center justify-center" aria-live="polite" aria-atomic="true">
 
           {testimonials.map((t, i) => (
             <div
@@ -109,7 +109,8 @@ export default function ContactHub() {
               key={i}
               onClick={() => handleDotClick(i)}
               aria-label={`Testimonial ${i + 1}`}
-              className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+              aria-current={i === activeIndex ? "true" : undefined}
+              className={`w-3 h-3 rounded-full transition-colors duration-300 ${
                 i === activeIndex
                   ? "bg-accent"
                   : "bg-border hover:bg-muted"

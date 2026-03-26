@@ -307,7 +307,8 @@ export default function Navbar() {
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="md:hidden flex flex-col gap-1.5 p-2"
-            aria-label="Menu"
+            aria-label={menuOpen ? "Chiudi menu" : "Apri menu"}
+            aria-expanded={menuOpen}
           >
             <span
               className={`block w-5 h-px bg-foreground transition-transform duration-300 ${

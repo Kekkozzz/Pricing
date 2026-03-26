@@ -26,7 +26,7 @@ function PlaceholderCard({ name, tag }: { name: string; tag: string }) {
       {/* Gradient background unique per card */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(201,185,154,0.08)_0%,transparent_70%)]" />
       <div className="absolute inset-0 flex flex-col justify-end p-7">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-accent/60 font-mono mb-2">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-accent font-mono mb-2">
           {tag}
         </p>
         <p className="text-base font-medium text-foreground/80">{name}</p>

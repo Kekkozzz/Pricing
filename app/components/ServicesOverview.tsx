@@ -96,7 +96,7 @@ function ServiceCard({
       <div className="grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-6 items-center">
         {/* Left — Text content */}
         <div className="order-2 sm:order-1">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-accent/60 font-mono mb-3">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-accent font-mono mb-3">
             {cat.name}
           </p>
           <h3 className="text-lg font-medium tracking-tight mb-3 group-hover:text-accent transition-colors duration-300">
@@ -115,6 +115,8 @@ function ServiceCard({
 
         {/* Right — Lottie or fallback icon */}
         <div
+          aria-hidden="true"
+          role="presentation"
           className={`order-1 sm:order-2 flex items-center justify-center max-h-32 sm:max-h-48 transition-[filter] duration-500 ${
             showGrayscale
               ? "grayscale brightness-[0.7] group-hover:grayscale-0 group-hover:brightness-100"

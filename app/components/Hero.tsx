@@ -55,7 +55,7 @@ export default function Hero() {
           </div>
 
           {/* Right — Lottie animation */}
-          <div className="animate-fade-up stagger-5">
+          <div className="animate-fade-up stagger-5" aria-hidden="true" role="presentation">
             <div className="relative w-full scale-125 origin-center">
               {animationData && (
                 <Lottie
