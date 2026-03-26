@@ -81,13 +81,6 @@ export default function ContactHub() {
 
         {/* Testimonial carousel */}
         <div className="relative mb-12 min-h-40 flex items-center justify-center">
-          {/* Decorative quote mark */}
-          <span
-            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 font-display text-[120px] leading-none text-accent/10 select-none pointer-events-none"
-            aria-hidden="true"
-          >
-            &ldquo;
-          </span>
 
           {testimonials.map((t, i) => (
             <div
