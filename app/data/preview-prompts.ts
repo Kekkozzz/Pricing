@@ -42,15 +42,14 @@ const serviceBlueprints: Record<string, { layout: string; sections: string }> = 
 - Data table with 5-6 rows, column headers, alternating row colors, and action buttons
 - Floating action button (FAB) in bottom-right corner`,
   },
-  "seo-marketing": {
-    layout: "high-conversion marketing landing page",
-    sections: `- Minimal navbar with logo and a single "Get Started" CTA button
-- Hero section: large bold headline (benefit-driven), subheadline, email capture input with CTA button, and a hero image or illustration on the right (60/40 split)
-- Logo bar: 5-6 grayscale partner/client logos in a horizontal strip
-- Stats section: 3 large numbers with labels (e.g., "10K+ Clients", "99% Uptime")
-- Features section: 3-column grid with icons, titles, and 2-line descriptions
-- Social proof: 2-3 testimonial cards with avatar, name, role, and quote
-- Final CTA section with contrasting background, headline, and centered button`,
+  "mobile-app": {
+    layout: "mobile app showcase landing page",
+    sections: `- Sticky navbar with logo left, navigation links right, and a "Scarica l'App" CTA button
+- Hero section: bold headline about the app, subheadline with value proposition, two store badges (App Store + Google Play) side by side, and a large phone mockup on the right showing the app's main screen (60/40 split)
+- "Come Funziona" section: 3-step horizontal flow with numbered circles, icons, short titles, and one-line descriptions
+- Feature highlight section: alternating left-right layout (phone mockup + text block), 2-3 key features with icons and short descriptions
+- Social proof strip: app rating stars, download count, and 2-3 short user review cards with avatar, name, and quote
+- Final CTA section with centered headline, subheadline, store badges, and a subtle gradient background`,
   },
 };
 

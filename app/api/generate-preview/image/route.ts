@@ -9,7 +9,7 @@ import {
 } from "@/app/lib/gemini";
 import { buildImagePrompt, type PreviewInput } from "@/app/data/preview-prompts";
 
-export const maxDuration = 120;
+export const maxDuration = 180;
 
 // In-memory rate limit store (per-instance; sufficient for single-server deploy)
 const ipCounts = new Map<string, { count: number; resetAt: number }>();

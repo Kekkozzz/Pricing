@@ -18,9 +18,9 @@ const testimonials = [
   },
   {
     quote:
-      "Dalla strategia SEO al redesign completo, hanno curato ogni aspetto. Il nostro traffico organico è cresciuto del 180%.",
+      "L'app mobile che hanno sviluppato per noi è intuitiva e velocissima. I nostri utenti la adorano — le recensioni sullo store parlano chiaro.",
     name: "Alessandro T.",
-    role: "Marketing Director, GreenEnergy",
+    role: "Product Manager, FitTracker",
   },
   {
     quote:

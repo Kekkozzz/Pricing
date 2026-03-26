@@ -4,11 +4,18 @@ import { useState, useEffect } from "react";
 import { Image as ImageIcon } from "lucide-react";
 
 const messages = [
-  "Sto progettando la tua homepage...",
+  "Analizzo le tue preferenze di design...",
   "Scelgo il layout migliore per il tuo settore...",
+  "Definisco la struttura delle sezioni...",
   "Applico i tuoi colori e il tuo stile...",
-  "Creo il mockup visuale...",
-  "Quasi pronto...",
+  "L'intelligenza artificiale sta disegnando il mockup...",
+  "Sto componendo header, hero e navigazione...",
+  "Genero ogni dettaglio grafico del layout...",
+  "Perfeziono tipografia e spaziature...",
+  "Aggiungo gli ultimi elementi al design...",
+  "Ottimizzo il rendering finale...",
+  "Ci siamo quasi, ancora qualche secondo...",
+  "Finalizzo il tuo mockup personalizzato...",
 ];
 
 export default function PreviewLoading() {
@@ -17,14 +24,14 @@ export default function PreviewLoading() {
 
   useEffect(() => {
     const msgInterval = setInterval(() => {
-      setMsgIndex((i) => (i + 1) % messages.length);
-    }, 2500);
+      setMsgIndex((i) => (i < messages.length - 1 ? i + 1 : i));
+    }, 8000);
     return () => clearInterval(msgInterval);
   }, []);
 
   useEffect(() => {
-    const target = 90;
-    const duration = 55000;
+    const target = 95;
+    const duration = 120000;
     const step = target / (duration / 50);
     const interval = setInterval(() => {
       setProgress((p) => Math.min(p + step, target));

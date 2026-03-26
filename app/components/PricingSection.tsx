@@ -5,7 +5,7 @@ import {
   Globe,
   ShoppingBag,
   Zap,
-  TrendingUp,
+  Smartphone,
   FileText,
   Calendar,
   MessageCircle,
@@ -26,7 +26,7 @@ const iconMap: Record<string, React.ReactNode> = {
   globe: <Globe size={20} strokeWidth={1.5} />,
   "shopping-bag": <ShoppingBag size={20} strokeWidth={1.5} />,
   zap: <Zap size={20} strokeWidth={1.5} />,
-  "trending-up": <TrendingUp size={20} strokeWidth={1.5} />,
+  smartphone: <Smartphone size={20} strokeWidth={1.5} />,
 };
 
 type TierKey = "base" | "pro" | "premium";

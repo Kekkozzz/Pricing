@@ -8,7 +8,7 @@ const ai = new GoogleGenAI({ apiKey });
 
 const IMAGE_MODEL = "gemini-3.1-flash-image-preview";
 const MAX_RETRIES = 1;
-const IMAGE_TIMEOUT = 90_000;
+const IMAGE_TIMEOUT = 120_000;
 
 // Custom error classes for differentiated handling
 export class GeminiTimeoutError extends Error {

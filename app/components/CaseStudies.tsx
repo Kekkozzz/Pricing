@@ -14,7 +14,7 @@ const projects = [
   { name: "Ristorante Da Mario", tag: "Sito Web" },
   { name: "EduPlatform", tag: "Web App" },
   { name: "Boutique Milano", tag: "Shop & SaaS" },
-  { name: "GreenEnergy Corp", tag: "SEO & Marketing" },
+  { name: "FitTracker", tag: "Mobile App" },
 ];
 
 const row1 = projects.slice(0, 4);

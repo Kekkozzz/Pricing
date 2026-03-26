@@ -177,7 +177,7 @@ export default function AIPreviewStep({
 
     const controller = new AbortController();
     abortRef.current = controller;
-    const clientTimeout = setTimeout(() => controller.abort(), 120_000);
+    const clientTimeout = setTimeout(() => controller.abort(), 200_000);
 
     try {
       const imgRes = await fetch("/api/generate-preview/image", {

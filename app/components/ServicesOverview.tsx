@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import { Globe, ShoppingBag, Zap, TrendingUp } from "lucide-react";
+import { Globe, ShoppingBag, Zap, Smartphone } from "lucide-react";
 import Lottie, { type LottieRefCurrentProps } from "lottie-react";
 import { categories, type ServiceCategory } from "../data/packages";
 
@@ -9,7 +9,7 @@ const fallbackIcons: Record<string, React.ReactNode> = {
   globe: <Globe size={48} strokeWidth={1} />,
   "shopping-bag": <ShoppingBag size={48} strokeWidth={1} />,
   zap: <Zap size={48} strokeWidth={1} />,
-  "trending-up": <TrendingUp size={48} strokeWidth={1} />,
+  smartphone: <Smartphone size={48} strokeWidth={1} />,
 };
 
 function ServiceCard({

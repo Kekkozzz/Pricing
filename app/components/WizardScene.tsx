@@ -231,65 +231,137 @@ function createDashboard(): THREE.Group {
   return group;
 }
 
-function createChart(): THREE.Group {
+function createSmartphone(): THREE.Group {
   const group = new THREE.Group();
-  const heights = [0.6, 1.0, 0.8, 1.4, 1.8];
-  const barWidth = 0.3;
-  const gap = 0.15;
-  const totalWidth = heights.length * (barWidth + gap) - gap;
-  const startX = -totalWidth / 2 + barWidth / 2;
+  const mat = (o: number) =>
+    new THREE.LineBasicMaterial({ color: ACCENT, transparent: true, opacity: o });
 
-  heights.forEach((h, i) => {
-    const barGeo = new THREE.BoxGeometry(barWidth, h, 0.2);
-    const barEdges = new THREE.EdgesGeometry(barGeo);
-    const bar = new THREE.LineSegments(
-      barEdges,
-      new THREE.LineBasicMaterial({
-        color: ACCENT,
-        transparent: true,
-        opacity: 0.3 + (i / heights.length) * 0.4,
-      })
-    );
-    bar.position.set(startX + i * (barWidth + gap), h / 2 - 0.9, 0);
-    group.add(bar);
+  // Phone body
+  const bodyGeo = new THREE.BoxGeometry(1.2, 2.2, 0.1);
+  const body = new THREE.LineSegments(new THREE.EdgesGeometry(bodyGeo), mat(0.7));
+  group.add(body);
+
+  // Screen bezel
+  const screenGeo = new THREE.PlaneGeometry(1.0, 1.85);
+  const screen = new THREE.LineSegments(new THREE.EdgesGeometry(screenGeo), mat(0.35));
+  screen.position.set(0, 0, 0.06);
+  group.add(screen);
+
+  // Status bar line
+  const statusPts = [
+    new THREE.Vector3(-0.45, 0.85, 0.07),
+    new THREE.Vector3(0.45, 0.85, 0.07),
+  ];
+  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(statusPts), mat(0.3)));
+
+  // Notch / dynamic island
+  const notchGeo = new THREE.PlaneGeometry(0.3, 0.06);
+  const notch = new THREE.LineSegments(new THREE.EdgesGeometry(notchGeo), mat(0.4));
+  notch.position.set(0, 0.9, 0.07);
+  group.add(notch);
+
+  // Time indicator (left)
+  const timePts = [
+    new THREE.Vector3(-0.42, 0.88, 0.07),
+    new THREE.Vector3(-0.28, 0.88, 0.07),
+  ];
+  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(timePts), mat(0.2)));
+
+  // Battery indicator (right)
+  const battPts = [
+    new THREE.Vector3(0.3, 0.88, 0.07),
+    new THREE.Vector3(0.42, 0.88, 0.07),
+  ];
+  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(battPts), mat(0.2)));
+
+  // App header bar
+  const headerPts = [
+    new THREE.Vector3(-0.45, 0.7, 0.07),
+    new THREE.Vector3(0.45, 0.7, 0.07),
+  ];
+  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(headerPts), mat(0.25)));
+
+  // Header title
+  const titlePts = [
+    new THREE.Vector3(-0.25, 0.77, 0.07),
+    new THREE.Vector3(0.25, 0.77, 0.07),
+  ];
+  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(titlePts), mat(0.3)));
+
+  // 2x2 card grid
+  const positions = [
+    [-0.22, 0.4],
+    [0.22, 0.4],
+    [-0.22, -0.05],
+    [0.22, -0.05],
+  ];
+  positions.forEach(([x, y]) => {
+    const cardGeo = new THREE.PlaneGeometry(0.35, 0.35);
+    const card = new THREE.LineSegments(new THREE.EdgesGeometry(cardGeo), mat(0.25));
+    card.position.set(x, y, 0.07);
+    group.add(card);
+
+    // Icon circle inside card
+    const iconGeo = new THREE.CircleGeometry(0.06, 8);
+    const icon = new THREE.LineSegments(new THREE.EdgesGeometry(iconGeo), mat(0.2));
+    icon.position.set(x, y + 0.05, 0.08);
+    group.add(icon);
+
+    // Label line
+    const labelPts = [
+      new THREE.Vector3(x - 0.1, y - 0.08, 0.08),
+      new THREE.Vector3(x + 0.1, y - 0.08, 0.08),
+    ];
+    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(labelPts), mat(0.15)));
   });
 
-  // Trend line
-  const trendPoints = heights.map(
-    (h, i) =>
-      new THREE.Vector3(startX + i * (barWidth + gap), h - 0.9 + 0.1, 0.15)
-  );
-  const trendCurve = new THREE.CatmullRomCurve3(trendPoints);
-  const trendGeo = new THREE.BufferGeometry().setFromPoints(
-    trendCurve.getPoints(40)
-  );
-  const trend = new THREE.Line(
-    trendGeo,
-    new THREE.LineBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.7 })
-  );
-  group.add(trend);
+  // List items
+  for (let i = 0; i < 3; i++) {
+    const rowY = -0.4 - i * 0.15;
+    const dotGeo = new THREE.CircleGeometry(0.04, 8);
+    const dot = new THREE.LineSegments(new THREE.EdgesGeometry(dotGeo), mat(0.2));
+    dot.position.set(-0.35, rowY, 0.07);
+    group.add(dot);
 
-  // Base line
-  const baseGeo = new THREE.BufferGeometry().setFromPoints([
-    new THREE.Vector3(-totalWidth / 2 - 0.2, -0.9, 0),
-    new THREE.Vector3(totalWidth / 2 + 0.2, -0.9, 0),
-  ]);
-  const baseLine = new THREE.Line(
-    baseGeo,
-    new THREE.LineBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.3 })
-  );
-  group.add(baseLine);
+    const textPts = [
+      new THREE.Vector3(-0.25, rowY, 0.07),
+      new THREE.Vector3(0.1 + Math.random() * 0.2, rowY, 0.07),
+    ];
+    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(textPts), mat(0.15)));
+  }
+
+  // Bottom navigation bar
+  const navBarPts = [
+    new THREE.Vector3(-0.45, -0.75, 0.07),
+    new THREE.Vector3(0.45, -0.75, 0.07),
+  ];
+  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(navBarPts), mat(0.3)));
+
+  // Bottom nav icons
+  [-0.3, -0.1, 0.1, 0.3].forEach((x) => {
+    const navIconGeo = new THREE.PlaneGeometry(0.1, 0.1);
+    const navIcon = new THREE.LineSegments(new THREE.EdgesGeometry(navIconGeo), mat(0.25));
+    navIcon.position.set(x, -0.85, 0.07);
+    group.add(navIcon);
+  });
+
+  // Home indicator bar
+  const homePts = [
+    new THREE.Vector3(-0.15, -0.98, 0.07),
+    new THREE.Vector3(0.15, -0.98, 0.07),
+  ];
+  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(homePts), mat(0.3)));
 
   return group;
 }
 
-const serviceIds = ["siti-web", "shop-saas", "web-app", "seo-marketing"] as const;
+const serviceIds = ["siti-web", "shop-saas", "web-app", "mobile-app"] as const;
 
 const geometryBuilders: Record<string, () => THREE.Group> = {
   "siti-web": createLaptop,
   "shop-saas": createShoppingBag,
   "web-app": createDashboard,
-  "seo-marketing": createChart,
+  "mobile-app": createSmartphone,
 };
 
 // Orbit positions for idle state (4 corners)
@@ -297,7 +369,7 @@ const orbitPositions = [
   { x: -1.2, y: 0.8 },   // top-left: laptop
   { x: 1.2, y: 0.8 },    // top-right: shop
   { x: -1.2, y: -0.8 },  // bottom-left: dashboard
-  { x: 1.2, y: -0.8 },   // bottom-right: chart
+  { x: 1.2, y: -0.8 },   // bottom-right: smartphone
 ];
 
 type SceneState = "idle" | "transitioning" | "selected";

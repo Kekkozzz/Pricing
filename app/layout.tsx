@@ -22,7 +22,7 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   title: "Servizi Web & Digitali — Edizioni Duepuntozero",
   description:
-    "Pacchetti trasparenti per siti web, e-commerce, web app e SEO. Soluzioni digitali su misura per il tuo business.",
+    "Pacchetti trasparenti per siti web, e-commerce, web app e mobile app. Soluzioni digitali su misura per il tuo business.",
 };
 
 export default function RootLayout({
