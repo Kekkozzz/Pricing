@@ -15,6 +15,7 @@ import { categories } from "../data/packages";
 import type { ServiceCategory, Tier } from "../data/packages";
 import { siteConfig } from "../data/config";
 import WizardScene from "./WizardScene";
+import AIPreviewStep from "./AIPreviewStep";
 
 function easeInOutCubic(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -32,7 +33,7 @@ type TierKey = "base" | "pro" | "premium";
 function ProgressBar({ current }: { current: number }) {
   return (
     <div className="flex gap-1.5 mb-8">
-      {[1, 2, 3, 4, 5].map((s) => (
+      {[1, 2, 3, 4, 5, 6].map((s) => (
         <div
           key={s}
           className={`flex-1 h-0.5 rounded-full transition-all duration-700 ${
@@ -105,7 +106,8 @@ export default function PricingSection() {
     (step === 1 && catIndex !== null) ||
     (step === 2 && tierKey !== null) ||
     step === 3 ||
-    step === 4;
+    step === 4 ||
+    step === 5;
 
   const goToStep = (next: number) => {
     setSlideDir(next > step ? "left" : "right");
@@ -139,7 +141,7 @@ export default function PricingSection() {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    if (!showForm || step !== 5 || !stepRef.current) return;
+    if (!showForm || step !== 6 || !stepRef.current) return;
 
     const container = stepRef.current;
     const startY = container.scrollTop;
@@ -298,7 +300,7 @@ export default function PricingSection() {
     return (
       <>
         <p className="text-[10px] uppercase tracking-[0.2em] text-accent mb-2 font-mono">
-          Step 1 di 5
+          Step 1 di 6
         </p>
         <h3 className="font-display text-2xl md:text-3xl mb-2">
           Scegli il servizio
@@ -355,7 +357,7 @@ export default function PricingSection() {
     return (
       <>
         <p className="text-[10px] uppercase tracking-[0.2em] text-accent mb-2 font-mono">
-          Step 2 di 5
+          Step 2 di 6
         </p>
         <h3 className="font-display text-2xl md:text-3xl mb-2">
           Scegli il piano
@@ -401,7 +403,7 @@ export default function PricingSection() {
     return (
       <>
         <p className="text-[10px] uppercase tracking-[0.2em] text-accent mb-2 font-mono">
-          Step 3 di 5
+          Step 3 di 6
         </p>
         <h3 className="font-display text-2xl md:text-3xl mb-2">
           Cosa include il tuo piano
@@ -431,7 +433,7 @@ export default function PricingSection() {
     return (
       <>
         <p className="text-[10px] uppercase tracking-[0.2em] text-accent mb-2 font-mono">
-          Step 4 di 5
+          Step 4 di 6
         </p>
         <h3 className="font-display text-2xl md:text-3xl mb-2">
           Personalizza
@@ -480,6 +482,27 @@ export default function PricingSection() {
     );
   }
 
+  function renderStepAIPreview() {
+    if (!cat || !tierKey || !tier) return null;
+    const featureNames = cat.features
+      .filter((f) => f[tierKey] !== false)
+      .map((f) => f.name);
+    const addOnNames = cat.addOns
+      .filter((a) => addOns.includes(a.name))
+      .map((a) => a.name);
+
+    return (
+      <AIPreviewStep
+        serviceName={cat.name}
+        serviceId={cat.id}
+        tierName={tier.name}
+        features={featureNames}
+        addOns={addOnNames}
+        onProceed={() => goToStep(step + 1)}
+      />
+    );
+  }
+
   function renderStepContact() {
     const contactChannels = [
       {
@@ -511,7 +534,7 @@ export default function PricingSection() {
     return (
       <>
         <p className="text-[10px] uppercase tracking-[0.2em] text-accent mb-2 font-mono">
-          Step 5 di 5
+          Step 6 di 6
         </p>
         <h3 className="font-display text-2xl md:text-3xl mb-2">Iniziamo!</h3>
         <p className="text-sm text-muted mb-6">
@@ -628,6 +651,7 @@ export default function PricingSection() {
     renderStepTier,
     renderStepFeatures,
     renderStepAddOns,
+    renderStepAIPreview,
     renderStepContact,
   ];
   const currentStep = steps[step - 1];
@@ -645,9 +669,9 @@ export default function PricingSection() {
             Configura il tuo pacchetto
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 border border-border h-175">
-          {/* Left Panel — split: 3D top + text bottom */}
-          <div className="hidden md:flex flex-col border-r border-border overflow-hidden">
+        <div className="grid border border-border transition-all duration-700 ease-in-out md:grid-cols-[var(--left-col)_1fr]" style={{ "--left-col": step === 5 ? "0fr" : "1fr", height: step === 5 ? "auto" : "700px" } as React.CSSProperties}>
+          {/* Left Panel — split: 3D top + text bottom (collapses on step 5) */}
+          <div className={`hidden md:flex flex-col border-r border-border transition-opacity duration-500 ${step === 5 ? "opacity-0 overflow-hidden" : "opacity-100 overflow-hidden"}`}>
             {/* 3D Scene area */}
             <div className="relative h-[65%] bg-surface/20 overflow-hidden">
               <WizardScene serviceId={cat?.id ?? null} step={step} />
@@ -659,9 +683,9 @@ export default function PricingSection() {
               {renderLeftPanelContent()}
             </div>
           </div>
-          {renderMobileHeader()}
+          {step !== 5 && renderMobileHeader()}
 
-          <div className="flex flex-col p-8 md:p-12 lg:p-14 h-full overflow-hidden">
+          <div className={`flex flex-col p-8 md:p-12 lg:p-14 ${step === 5 ? "min-h-125" : "h-full"} overflow-hidden transition-all duration-700 ease-in-out`}>
             <div className="hidden md:block shrink-0">
               <ProgressBar current={step} />
             </div>
@@ -681,12 +705,12 @@ export default function PricingSection() {
                   onClick={() => goToStep(step - 1)}
                   className="text-sm text-muted hover:text-foreground transition-colors"
                 >
-                  ← {step === 5 ? "Modifica selezione" : "Indietro"}
+                  ← {step === 6 ? "Modifica selezione" : "Indietro"}
                 </button>
               ) : (
                 <div />
               )}
-              {step < 5 && (
+              {step < 6 && (
                 <button
                   onClick={() => canNext && goToStep(step + 1)}
                   disabled={!canNext}

@@ -18,26 +18,27 @@ function createLaptop(): THREE.Group {
   const mat = (o: number) =>
     new THREE.LineBasicMaterial({ color: ACCENT, transparent: true, opacity: o });
 
+  // Offset to center the whole laptop vertically
+  const oy = -0.35;
+
   // Screen outer frame
   const screenGeo = new THREE.BoxGeometry(2.6, 1.7, 0.05);
   const screen = new THREE.LineSegments(new THREE.EdgesGeometry(screenGeo), mat(0.7));
-  screen.position.y = 0.95;
-  screen.position.z = -0.3;
+  screen.position.set(0, 0.95 + oy, -0.3);
   screen.rotation.x = -0.12;
   group.add(screen);
 
   // Inner screen bezel
   const bezelGeo = new THREE.BoxGeometry(2.3, 1.4, 0.01);
   const bezel = new THREE.LineSegments(new THREE.EdgesGeometry(bezelGeo), mat(0.35));
-  bezel.position.y = 0.95;
-  bezel.position.z = -0.27;
+  bezel.position.set(0, 0.95 + oy, -0.27);
   bezel.rotation.x = -0.12;
   group.add(bezel);
 
   // Browser bar
   const barPoints = [
-    new THREE.Vector3(-1.1, 1.55, -0.26),
-    new THREE.Vector3(1.1, 1.55, -0.26),
+    new THREE.Vector3(-1.1, 1.55 + oy, -0.26),
+    new THREE.Vector3(1.1, 1.55 + oy, -0.26),
   ];
   group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(barPoints), mat(0.3)));
 
@@ -46,21 +47,20 @@ function createLaptop(): THREE.Group {
     const dotGeo = new THREE.CircleGeometry(0.025, 8);
     const dotEdges = new THREE.EdgesGeometry(dotGeo);
     const dot = new THREE.LineSegments(dotEdges, mat(0.4));
-    dot.position.set(x, 1.6, -0.255);
+    dot.position.set(x, 1.6 + oy, -0.255);
     dot.rotation.x = -0.12;
     group.add(dot);
   });
 
-  // Content blocks on screen
   // Hero block
   const heroGeo = new THREE.PlaneGeometry(1.8, 0.4);
   const hero = new THREE.LineSegments(new THREE.EdgesGeometry(heroGeo), mat(0.25));
-  hero.position.set(0, 1.2, -0.26);
+  hero.position.set(0, 1.2 + oy, -0.26);
   hero.rotation.x = -0.12;
   group.add(hero);
 
   // Two column blocks
-  [[-0.5, 0.7], [0.5, 0.7]].forEach(([x, y]) => {
+  [[-0.5, 0.7 + oy], [0.5, 0.7 + oy]].forEach(([x, y]) => {
     const blockGeo = new THREE.PlaneGeometry(0.8, 0.35);
     const block = new THREE.LineSegments(new THREE.EdgesGeometry(blockGeo), mat(0.2));
     block.position.set(x, y, -0.26);
@@ -72,29 +72,31 @@ function createLaptop(): THREE.Group {
   for (let i = 0; i < 3; i++) {
     const w = 0.6 + Math.random() * 0.3;
     const pts = [
-      new THREE.Vector3(-0.9, 0.35 - i * 0.12, -0.26),
-      new THREE.Vector3(-0.9 + w, 0.35 - i * 0.12, -0.26),
+      new THREE.Vector3(-0.9, 0.35 + oy - i * 0.12, -0.26),
+      new THREE.Vector3(-0.9 + w, 0.35 + oy - i * 0.12, -0.26),
     ];
     group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat(0.15)));
   }
 
   // Base/keyboard
   const baseGeo = new THREE.BoxGeometry(2.8, 0.06, 1.7);
-  group.add(new THREE.LineSegments(new THREE.EdgesGeometry(baseGeo), mat(0.3)));
+  const base = new THREE.LineSegments(new THREE.EdgesGeometry(baseGeo), mat(0.3));
+  base.position.y = oy;
+  group.add(base);
 
   // Trackpad
   const padGeo = new THREE.PlaneGeometry(0.8, 0.5);
   const pad = new THREE.LineSegments(new THREE.EdgesGeometry(padGeo), mat(0.15));
-  pad.position.set(0, 0.04, 0.15);
+  pad.position.set(0, 0.04 + oy, 0.15);
   pad.rotation.x = -Math.PI / 2;
   group.add(pad);
 
-  // Keyboard hints (rows of small lines)
+  // Keyboard hints
   for (let row = 0; row < 3; row++) {
     for (let col = 0; col < 8; col++) {
       const pts = [
-        new THREE.Vector3(-1.0 + col * 0.25, 0.04, -0.5 + row * 0.2),
-        new THREE.Vector3(-0.85 + col * 0.25, 0.04, -0.5 + row * 0.2),
+        new THREE.Vector3(-1.0 + col * 0.25, 0.04 + oy, -0.5 + row * 0.2),
+        new THREE.Vector3(-0.85 + col * 0.25, 0.04 + oy, -0.5 + row * 0.2),
       ];
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat(0.08)));
     }
@@ -281,6 +283,8 @@ function createChart(): THREE.Group {
   return group;
 }
 
+const serviceIds = ["siti-web", "shop-saas", "web-app", "seo-marketing"] as const;
+
 const geometryBuilders: Record<string, () => THREE.Group> = {
   "siti-web": createLaptop,
   "shop-saas": createShoppingBag,
@@ -288,19 +292,32 @@ const geometryBuilders: Record<string, () => THREE.Group> = {
   "seo-marketing": createChart,
 };
 
+// Orbit positions for idle state (4 corners)
+const orbitPositions = [
+  { x: -1.2, y: 0.8 },   // top-left: laptop
+  { x: 1.2, y: 0.8 },    // top-right: shop
+  { x: -1.2, y: -0.8 },  // bottom-left: dashboard
+  { x: 1.2, y: -0.8 },   // bottom-right: chart
+];
+
+type SceneState = "idle" | "transitioning" | "selected";
+
 export default function WizardScene({ serviceId, step }: WizardSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<{
     renderer: THREE.WebGLRenderer;
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
-    currentGroup: THREE.Group | null;
+    orbitGroup: THREE.Group;
+    orbitItems: THREE.Group[];
+    selectedGroup: THREE.Group | null;
+    state: SceneState;
     animId: number;
+    clock: THREE.Clock;
   } | null>(null);
   const prevServiceRef = useRef<string | null>(null);
   const prevStepRef = useRef<number>(step);
 
-  // Init Three.js
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -312,35 +329,63 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
-      45,
-      container.clientWidth / container.clientHeight,
-      0.1,
-      100
+      45, container.clientWidth / container.clientHeight, 0.1, 100
     );
-    camera.position.z = 5;
-    camera.position.y = 0.2;
+    camera.position.set(0, 0, 5);
+    camera.lookAt(0, 0, 0);
 
-    // Subtle ambient light
     const ambient = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambient);
 
-    sceneRef.current = { renderer, scene, camera, currentGroup: null, animId: 0 };
+    // 4 mini geometries — each lives directly in the scene (NOT in a rotating group)
+    // The "orbit" effect is done by moving each item individually in the loop
+    const orbitGroup = new THREE.Group();
+    const orbitItems: THREE.Group[] = [];
 
-    // Animation loop
+    serviceIds.forEach((id, i) => {
+      const builder = geometryBuilders[id];
+      const item = builder();
+      item.scale.set(0.3, 0.3, 0.3);
+      item.position.set(orbitPositions[i].x, orbitPositions[i].y, 0);
+      item.traverse((child) => {
+        if (child instanceof THREE.LineSegments || child instanceof THREE.Line) {
+          const mat = child.material;
+          if (mat instanceof THREE.LineBasicMaterial) mat.opacity *= 0.6;
+        }
+      });
+      orbitGroup.add(item);
+      orbitItems.push(item);
+    });
+    scene.add(orbitGroup);
+
+    const clock = new THREE.Clock();
+    sceneRef.current = {
+      renderer, scene, camera, orbitGroup, orbitItems,
+      selectedGroup: null, state: "idle", animId: 0, clock,
+    };
+
     const animate = () => {
       const ref = sceneRef.current;
       if (!ref) return;
       ref.animId = requestAnimationFrame(animate);
+      const elapsed = ref.clock.getElapsedTime();
 
-      if (ref.currentGroup) {
-        ref.currentGroup.rotation.y += 0.005;
+      if (ref.state === "idle") {
+        ref.orbitGroup.rotation.y = elapsed * 0.15;
+        ref.orbitItems.forEach((item, i) => {
+          item.rotation.y = elapsed * 0.4 + i * Math.PI * 0.5;
+          item.position.y = orbitPositions[i].y + Math.sin(elapsed * 0.8 + i * 1.5) * 0.1;
+        });
+      }
+      // "transitioning" — GSAP controls everything, loop just renders
+      if (ref.state === "selected" && ref.selectedGroup) {
+        ref.selectedGroup.rotation.y += 0.005;
       }
 
       ref.renderer.render(ref.scene, ref.camera);
     };
     animate();
 
-    // Resize
     const onResize = () => {
       if (!container || !sceneRef.current) return;
       const { renderer: r, camera: c } = sceneRef.current;
@@ -366,17 +411,12 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
     const ref = sceneRef.current;
     if (!ref) return;
 
+    // Same service — just pulse on step change
     if (serviceId === prevServiceRef.current) {
-      // Step change only — pulse
-      if (step !== prevStepRef.current && ref.currentGroup) {
-        gsap.to(ref.currentGroup.scale, {
-          x: 0.85,
-          y: 0.85,
-          z: 0.85,
-          duration: 0.25,
-          ease: "power2.out",
-          yoyo: true,
-          repeat: 1,
+      if (step !== prevStepRef.current && ref.selectedGroup) {
+        gsap.to(ref.selectedGroup.scale, {
+          x: 0.85, y: 0.85, z: 0.85,
+          duration: 0.25, ease: "power2.out", yoyo: true, repeat: 1,
         });
       }
       prevStepRef.current = step;
@@ -386,59 +426,164 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
     prevServiceRef.current = serviceId;
     prevStepRef.current = step;
 
-    const swapGeometry = () => {
-      // Remove old
-      if (ref.currentGroup) {
-        ref.scene.remove(ref.currentGroup);
-        ref.currentGroup.traverse((child) => {
-          if (child instanceof THREE.LineSegments || child instanceof THREE.Line) {
-            child.geometry.dispose();
-            if (child.material instanceof THREE.Material) child.material.dispose();
-          }
-        });
-      }
-
-      if (!serviceId) {
-        ref.currentGroup = null;
-        return;
-      }
-
-      // Create new
-      const builder = geometryBuilders[serviceId];
-      if (!builder) return;
-
-      const group = builder();
-      group.scale.set(0, 0, 0);
-      ref.scene.add(group);
-      ref.currentGroup = group;
-
-      // Animate in
-      gsap.to(group.scale, {
-        x: 0.8,
-        y: 0.8,
-        z: 0.8,
-        duration: 0.6,
-        ease: "power2.out",
+    const disposeGroup = (g: THREE.Group) => {
+      g.traverse((child) => {
+        if (child instanceof THREE.LineSegments || child instanceof THREE.Line) {
+          child.geometry.dispose();
+          if (child.material instanceof THREE.Material) child.material.dispose();
+        }
       });
-      gsap.fromTo(
-        group.rotation,
-        { y: -0.5 },
-        { y: 0, duration: 0.8, ease: "power2.out" }
-      );
+      if (g.parent) g.parent.remove(g);
     };
 
-    // If there was an old group, animate it out first
-    if (ref.currentGroup) {
-      gsap.to(ref.currentGroup.scale, {
-        x: 0,
-        y: 0,
-        z: 0,
-        duration: 0.3,
-        ease: "power2.in",
-        onComplete: swapGeometry,
+    // --- IDLE → SELECTED ---
+    if (serviceId && ref.state === "idle") {
+      ref.state = "transitioning";
+      const selectedIndex = serviceIds.indexOf(serviceId as typeof serviceIds[number]);
+      const selectedItem = ref.orbitItems[selectedIndex];
+
+      // 1. Freeze orbit — stop the animation loop from moving items
+      //    (state is now "transitioning" so loop just renders)
+
+      // 2. Compute each item's current world position and detach ALL from orbitGroup
+      const worldPositions: THREE.Vector3[] = [];
+      ref.orbitItems.forEach((item) => {
+        const wp = new THREE.Vector3();
+        item.getWorldPosition(wp);
+        worldPositions.push(wp);
       });
-    } else {
-      swapGeometry();
+      // Now detach all and place in scene at world positions
+      ref.orbitItems.forEach((item, i) => {
+        ref.orbitGroup.remove(item);
+        item.position.copy(worldPositions[i]);
+        ref.scene.add(item);
+      });
+      ref.orbitGroup.visible = false;
+
+      // 3. Shrink non-selected items
+      ref.orbitItems.forEach((item, i) => {
+        if (i !== selectedIndex) {
+          gsap.to(item.scale, {
+            x: 0, y: 0, z: 0,
+            duration: 0.4, ease: "power2.in",
+          });
+        }
+      });
+
+      // 4. Selected item: glide to (0,0,0) and scale up simultaneously
+      gsap.to(selectedItem.position, {
+        x: 0, y: 0, z: 0,
+        duration: 0.9, ease: "power3.inOut",
+      });
+      gsap.to(selectedItem.scale, {
+        x: 0.8, y: 0.8, z: 0.8,
+        duration: 0.9, ease: "power3.inOut",
+        onComplete: () => {
+          // 5. Seamless swap: replace orbit item with fresh full-opacity geometry
+          const currentRotY = selectedItem.rotation.y;
+          ref.orbitItems.forEach((item) => {
+            if (item.parent) item.parent.remove(item);
+          });
+
+          const builder = geometryBuilders[serviceId];
+          if (!builder) return;
+          const group = builder();
+          group.scale.set(0.8, 0.8, 0.8);
+          group.rotation.y = currentRotY;
+          group.position.set(0, 0, 0);
+          ref.scene.add(group);
+          ref.selectedGroup = group;
+          ref.state = "selected";
+        },
+      });
+      return;
+    }
+
+    // --- SELECTED → DIFFERENT SERVICE ---
+    if (serviceId && ref.state === "selected") {
+      ref.state = "transitioning";
+
+      const swapTo = () => {
+        if (ref.selectedGroup) disposeGroup(ref.selectedGroup);
+
+        const builder = geometryBuilders[serviceId];
+        if (!builder) return;
+        const group = builder();
+        group.scale.set(0, 0, 0);
+        group.position.set(0, 0, 0);
+        ref.scene.add(group);
+        ref.selectedGroup = group;
+        ref.state = "selected";
+
+        gsap.to(group.scale, {
+          x: 0.8, y: 0.8, z: 0.8,
+          duration: 0.6, ease: "power2.out",
+        });
+        gsap.fromTo(group.rotation,
+          { y: -0.5 },
+          { y: 0, duration: 0.8, ease: "power2.out" }
+        );
+      };
+
+      if (ref.selectedGroup) {
+        gsap.to(ref.selectedGroup.scale, {
+          x: 0, y: 0, z: 0,
+          duration: 0.3, ease: "power2.in", onComplete: swapTo,
+        });
+      } else {
+        swapTo();
+      }
+      return;
+    }
+
+    // --- SELECTED → IDLE (back) ---
+    if (!serviceId && (ref.state === "selected" || ref.state === "transitioning")) {
+      const restoreOrbit = () => {
+        if (ref.selectedGroup) {
+          disposeGroup(ref.selectedGroup);
+          ref.selectedGroup = null;
+        }
+
+        // Rebuild orbit: recreate mini geometries fresh
+        ref.orbitItems.forEach((item) => {
+          if (item.parent) item.parent.remove(item);
+        });
+        ref.orbitItems.length = 0;
+
+        ref.orbitGroup.clear();
+        serviceIds.forEach((id, i) => {
+          const builder = geometryBuilders[id];
+          const item = builder();
+          item.scale.set(0, 0, 0);
+          item.position.set(orbitPositions[i].x, orbitPositions[i].y, 0);
+          item.traverse((child) => {
+            if (child instanceof THREE.LineSegments || child instanceof THREE.Line) {
+              const mat = child.material;
+              if (mat instanceof THREE.LineBasicMaterial) mat.opacity *= 0.6;
+            }
+          });
+          ref.orbitGroup.add(item);
+          ref.orbitItems.push(item);
+
+          gsap.to(item.scale, {
+            x: 0.3, y: 0.3, z: 0.3,
+            duration: 0.5, delay: i * 0.1, ease: "power2.out",
+          });
+        });
+
+        ref.orbitGroup.rotation.y = 0;
+        ref.orbitGroup.visible = true;
+        ref.state = "idle";
+      };
+
+      if (ref.selectedGroup) {
+        gsap.to(ref.selectedGroup.scale, {
+          x: 0, y: 0, z: 0,
+          duration: 0.3, ease: "power2.in", onComplete: restoreOrbit,
+        });
+      } else {
+        restoreOrbit();
+      }
     }
   }, [serviceId, step]);
 
