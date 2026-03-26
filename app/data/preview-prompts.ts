@@ -54,43 +54,43 @@ const serviceBlueprints: Record<string, { layout: string; sections: string }> = 
   },
 };
 
-// --- Style-specific design directives ---
+// --- Style-specific design directives (with reference anchors) ---
 
 const styleDirectives: Record<string, string> = {
-  minimal: `DESIGN DIRECTION — MINIMAL:
-Typography: Use a clean sans-serif like Inter or Helvetica. One font family only. Sizes: hero headline ~48px, body ~16px.
-Spacing: Extremely generous whitespace — sections have 120px+ vertical padding. Content max-width ~1000px.
-Color: Use the brand colors sparingly — primary for CTAs and accents only. Background is white/off-white, text is near-black (#111). Maximum 2 colors beyond neutrals.
-Layout: Strict grid alignment. Asymmetric layouts are acceptable. No decorative borders or shadows.
-Details: No gradients, no rounded corners over 4px, no stock photos. Prefer geometric shapes or high-contrast photography. Buttons are minimal with subtle borders or solid fill.`,
+  minimal: `DESIGN DIRECTION — MINIMAL (reference: apple.com, evoulve.com):
+Typography: One clean sans-serif family throughout (Inter or SF Pro style). Hero headline rendered at ~48px medium weight, body at 16px regular. Tracking slightly open on headlines.
+Spacing: Sections breathe with 120px+ vertical padding. Content lives within a centered ~1000px container. Whitespace is the dominant visual element — every element has room to exist independently.
+Color: Brand colors appear only on CTA buttons and subtle link accents. Background is pure white or warm off-white (#fafaf9). Text is near-black (#111). Two colors maximum beyond neutrals.
+Layout: Elements align to a strict invisible grid. Asymmetric 60/40 splits add visual interest. Cards and containers have zero or 2px border-radius, thin 1px borders in #e5e5e5.
+Lighting: Flat, uniform — as captured on a calibrated IPS monitor under neutral lighting. Colors are true and accurate, with no cast or atmospheric effect.`,
 
-  moderno: `DESIGN DIRECTION — MODERN:
-Typography: Pair a geometric sans-serif (e.g., Plus Jakarta Sans) for headings with a readable body font. Hero headline ~52px bold.
-Spacing: Generous padding (80-100px between sections). Cards have 24-32px internal padding.
-Color: Use brand colors with subtle gradients (linear, 2 stops). Soft shadows (0 4px 24px rgba(0,0,0,0.08)). Light backgrounds with colored accent sections.
-Layout: Use large border-radius (12-16px) on cards and buttons. Asymmetric hero with floating UI elements or device mockups. Overlapping elements add depth.
-Details: Micro-interactions implied through hover states. Glassmorphism accents where appropriate. Rounded pill-shaped buttons. Subtle background patterns or mesh gradients.`,
+  moderno: `DESIGN DIRECTION — MODERN (reference: linear.app, vercel.com):
+Typography: Geometric sans-serif for headings (Plus Jakarta Sans / Geist style) at ~52px bold, paired with a clean 16px body. Headings use tight letter-spacing (-0.02em).
+Spacing: Generous 80-100px section padding. Cards have 24-32px internal padding with consistent gutters. Every grid row aligns perfectly.
+Color: Brand colors applied as subtle linear gradients (2 stops, 135deg). Soft drop-shadows on cards (0 4px 24px rgba(0,0,0,0.06)). Light backgrounds with one accent-colored section for rhythm.
+Layout: 12-16px border-radius on cards, 8px on buttons. Hero uses asymmetric composition with floating UI elements or isometric illustrations that overlap section boundaries, creating depth.
+Lighting: Soft ambient — simulating a modern backlit display. Subtle glassmorphism panels (frosted glass with 60% opacity) catch light naturally. Colors are vibrant but never oversaturated.`,
 
-  corporate: `DESIGN DIRECTION — CORPORATE:
-Typography: Pair a refined serif (e.g., Playfair Display) for headlines with a professional sans-serif body. Authoritative and structured.
-Spacing: Consistent grid-based spacing. Sections use 80-100px padding. Content structured in clear rows and columns.
-Color: Muted, serious palette — navy, charcoal, white. Brand colors used for primary CTAs and subtle accents. No bright or playful colors.
-Layout: Strict 12-column grid. Symmetrical layouts. Header with full navigation. Cards with minimal border-radius (4-6px) and thin borders.
-Details: Professional photography (people in business attire, city skylines). Trust indicators (certifications, awards). Clean data visualizations. Subtle line dividers between sections.`,
+  corporate: `DESIGN DIRECTION — CORPORATE (reference: stripe.com, wise.com):
+Typography: Refined serif headlines (Playfair Display / Georgia style) paired with a professional 16px sans-serif body. Headlines feel authoritative at ~44px. Small uppercase labels with wide tracking for section markers.
+Spacing: Grid-based rhythm — 80-100px section padding, 24px card gutters. Content organized in clean rows and columns with visible structure.
+Color: Serious, muted tones — navy (#1a2332), charcoal (#374151), pure white. Brand color reserved for primary CTA buttons and key data highlights. Accent color used at 10% opacity for section backgrounds.
+Layout: Strict 12-column grid with symmetrical compositions. Full-width navbar with complete navigation. Cards use 4-6px radius with thin 1px borders. Tables and data feel organized and trustworthy.
+Lighting: Clean, professional — like a corporate presentation on a high-resolution projector. Even illumination, accurate whites, no warm or cool color cast.`,
 
-  creativo: `DESIGN DIRECTION — CREATIVE:
-Typography: Bold, expressive display font for headlines (e.g., Clash Display). Large sizes (~60px+). Mix weights dramatically (thin body + ultra-bold headlines).
-Spacing: Dynamic spacing — tighter in some areas, very generous in others. Break the grid intentionally.
-Color: Vibrant, saturated brand colors. Use bold color blocks and contrasting sections. Dark backgrounds with bright accents are powerful. Consider color gradients and duotone imagery.
-Layout: Break conventions — overlapping elements, angled sections, full-bleed images, text over images with creative masking. Asymmetric hero with large typography as a visual element.
-Details: Custom illustrations or abstract shapes preferred over stock photos. Animated feel (diagonal lines, scattered dots, geometric patterns). Buttons with bold fills and strong hover states.`,
+  creativo: `DESIGN DIRECTION — CREATIVE (reference: awwwards.com winners, spotify.design):
+Typography: Expressive display font for headlines (Clash Display / Unbounded style) at 60px+ ultra-bold. Body uses a contrasting thin-weight sans-serif. Mix weights dramatically — the contrast between headline and body is extreme.
+Spacing: Intentionally dynamic — some sections pack elements tightly while others use vast 140px+ breathing room. The rhythm is syncopated, not uniform.
+Color: Fully saturated brand colors in bold blocks. Sections alternate between dark (#0a0a0a) and vivid color backgrounds. Duotone or gradient-washed imagery. Color is used emotionally, not just decoratively.
+Layout: Grid-breaking compositions — elements overlap, text crosses section boundaries, images bleed edge-to-edge. Angled dividers (3-5deg skew) between sections. Hero typography itself becomes the visual centerpiece.
+Lighting: Dramatic and directional — simulating a high-contrast display. Deep blacks, vivid highlights. Elements feel like they pop off the surface with strong figure-ground contrast.`,
 
-  elegante: `DESIGN DIRECTION — ELEGANT:
-Typography: Refined serif (e.g., Cormorant Garamond, Playfair Display) for headlines. Thin weights. Generous letter-spacing in uppercase labels. Body in a light sans-serif.
-Spacing: Very generous — luxury brands use space as a design element. 120-160px between sections. Let content breathe.
-Color: Dark palette (charcoal #1a1a1a, warm black #0d0d0d) with gold/champagne (#c9a96e, #d4af37) or warm metallic accents. Cream (#f5f0eb) as alternative light background.
-Layout: Centered compositions. Thin lines (1px) as dividers. Full-width imagery with subtle parallax feel. Cards with thin gold borders.
-Details: High-end photography (lifestyle, products). Thin decorative lines and subtle ornaments. Buttons with thin borders and hover fill. Noise texture overlay for depth. No heavy shadows.`,
+  elegante: `DESIGN DIRECTION — ELEGANT (reference: rolex.com, aesop.com):
+Typography: Refined serif (Cormorant Garamond / Didot style) for headlines at 44px thin/light weight. Uppercase labels with 0.15em letter-spacing. Body in a delicate 15px sans-serif with 1.7 line-height.
+Spacing: Luxurious — space is the primary design material. 140-180px between sections. Content max-width ~900px centered. Every element is surrounded by generous negative space.
+Color: Dark foundation (warm black #0d0d0d, charcoal #1a1a1a) with champagne gold (#c9a96e) or rose gold (#b76e79) as the sole accent. Cream (#f5f0eb) for light-on-dark inversions. Maximum 2 accent colors.
+Layout: Centered, symmetrical compositions. Thin 1px gold lines as section dividers. Full-width cinematic imagery (16:9 aspect). Cards float with delicate gold hairline borders and generous internal spacing.
+Lighting: Warm, intimate — as if viewed on a premium OLED display in a dimly lit room. Deep blacks with rich shadow detail. Gold accents catch light with a subtle metallic quality. The overall mood is refined and unhurried.`,
 };
 
 // --- Color formatting ---
@@ -107,29 +107,16 @@ export function buildImagePrompt(input: PreviewInput): string {
   const styleDir = styleDirectives[input.style.toLowerCase()] ?? styleDirectives["moderno"];
   const desc = input.description ? input.description.slice(0, 200) : "";
 
-  return `Generate an IMAGE: a pixel-perfect, award-quality website screenshot that looks like it was designed by a senior UI designer at a top agency.
+  return `A direct frontal screenshot of a ${blueprint.layout} displayed in a desktop browser at 1440x900 viewport, captured at 1:1 pixel ratio on a Retina display. The website belongs to "${input.businessName}", an Italian ${input.sector} business.${desc ? ` ${desc}.` : ""}
 
-WEBSITE TYPE: ${blueprint.layout}
-BUSINESS: "${input.businessName}" — sector: ${input.sector}
-${desc ? `CONTEXT: ${desc}` : ""}
-
-PAGE STRUCTURE (top to bottom):
+The page scrolls from top to bottom through these sections, each occupying clear horizontal bands:
 ${blueprint.sections}
 
 ${styleDir}
 
 COLOR SYSTEM: ${formatColors(input.colorPalette)}
 
-CRITICAL QUALITY REQUIREMENTS:
-- This must look like a REAL screenshot captured from a live, professionally designed website in a desktop browser (1440px wide viewport)
-- Sharp, pixel-perfect rendering — no blur, no artifacts, no AI-generated distortion on text
-- All text must be in Italian and must be realistic, contextual content (not lorem ipsum)
-- Typography must have clear visual hierarchy: headline > subheadline > body > caption
-- Perfect vertical rhythm and consistent spacing throughout
-- UI elements (buttons, inputs, cards) must look crisp and interactive
-- Use professional, contextually relevant imagery that matches the sector
-- The "${input.businessName}" brand name must appear clearly in the navbar/header area
-- Every section must feel intentionally designed with purpose and balance
+The screenshot renders with flat, uniform monitor lighting and accurate color reproduction — exactly as a designer would see it on a calibrated display. Every letterform is crisp and legible, every UI element (buttons, inputs, cards, icons) has sharp edges and consistent styling. All visible text is written in natural Italian — authentic copy that reads as if written by a native copywriter, contextually relevant to the ${input.sector} sector. The brand name "${input.businessName}" appears prominently in the top-left of the navbar. Typography follows a clear size hierarchy: large headline, medium subheadline, regular body, small caption — with consistent vertical rhythm and intentional spacing between every element.
 
-OUTPUT: Return ONLY the image. No text, no explanation.`;
+OUTPUT: ONLY the image.`;
 }
