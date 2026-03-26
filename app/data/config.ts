@@ -6,7 +6,7 @@ export const siteConfig = {
   contact: {
     formspreeUrl: "https://formspree.io/f/YOUR_FORM_ID",
     calendlyUrl: "https://calendly.com/edizioniduepuntozero",
-    whatsappNumber: "39XXXXXXXXXX",
+    whatsappNumber: "393889512305",
     email: "info@edizioniduepuntozero.it",
   },
 
