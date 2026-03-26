@@ -25,6 +25,7 @@ export type ServiceCategory = {
   id: string;
   name: string;
   icon: string;
+  lottie?: string;
   description: string;
   startingPrice: string;
   tiers: {
@@ -41,6 +42,7 @@ export const categories: ServiceCategory[] = [
     id: "siti-web",
     name: "Siti Web",
     icon: "globe",
+    lottie: "/Website.json",
     description:
       "Fatti trovare online — siti responsive con design su misura, SEO e gestione contenuti inclusa",
     startingPrice: "€499",
@@ -117,6 +119,7 @@ export const categories: ServiceCategory[] = [
     id: "shop-saas",
     name: "Shop & SaaS",
     icon: "shopping-bag",
+    lottie: "/Saas.json",
     description:
       "Vendi online dal giorno uno — shop completo con pagamenti sicuri, checkout Stripe e area clienti",
     startingPrice: "€999",
@@ -198,6 +201,7 @@ export const categories: ServiceCategory[] = [
     id: "web-app",
     name: "Web App",
     icon: "zap",
+    lottie: "/WebApp.json",
     description:
       "Digitalizza i tuoi processi — applicazioni web su misura con dashboard, notifiche e supporto dedicato",
     startingPrice: "€2.999",

@@ -1,13 +1,24 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+import Lottie from "lottie-react";
 import { siteConfig } from "../data/config";
 
 export default function Hero() {
+  const [animationData, setAnimationData] = useState(null);
+
+  useEffect(() => {
+    fetch("/hero.json")
+      .then((res) => res.json())
+      .then(setAnimationData);
+  }, []);
+
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+    <section id="hero" className="relative min-h-[90vh] flex items-center overflow-hidden">
       {/* Subtle radial gradient */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,185,154,0.06)_0%,transparent_60%)]" />
 
-      <div className="relative mx-auto max-w-6xl w-full px-6 py-32 md:py-40">
+      <div className="relative mx-auto max-w-7xl w-full px-8 py-32 md:py-40">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-20 items-center">
           {/* Left — Copy */}
           <div>
@@ -43,17 +54,16 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right — Hero image */}
+          {/* Right — Lottie animation */}
           <div className="animate-fade-up stagger-5">
-            <div className="relative w-full max-w-xl mx-auto aspect-4/3  overflow-hidden">
-              <Image
-                src="/hero.png"
-                alt="Anteprima del sito"
-                fill
-                sizes="(min-width: 1024px) 40vw, (min-width: 768px) 45vw, 90vw"
-                className="object-cover"
-                priority
-              />
+            <div className="relative w-full scale-125 origin-center">
+              {animationData && (
+                <Lottie
+                  animationData={animationData}
+                  loop
+                  autoplay
+                />
+              )}
             </div>
           </div>
         </div>

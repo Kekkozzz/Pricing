@@ -3,7 +3,7 @@ import { siteConfig } from "../data/config";
 export default function Footer() {
   return (
     <footer className="border-t border-border py-12 md:py-16">
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-7xl px-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <span className="font-display text-lg text-foreground">

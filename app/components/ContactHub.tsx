@@ -133,7 +133,7 @@ export default function ContactHub() {
 
   return (
     <section id="contatti" className="relative py-24 md:py-32">
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="mx-auto max-w-7xl px-8">
         {/* Header */}
         <div className="mb-12 md:mb-16">
           <p className="text-[10px] uppercase tracking-[0.35em] text-accent mb-4 font-mono">

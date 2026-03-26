@@ -358,7 +358,7 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
     });
     scene.add(orbitGroup);
 
-    const clock = new THREE.Clock();
+    const clock = new THREE.Clock(false); // start paused
     sceneRef.current = {
       renderer, scene, camera, orbitGroup, orbitItems,
       selectedGroup: null, state: "idle", animId: 0, clock,
@@ -384,7 +384,26 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
 
       ref.renderer.render(ref.scene, ref.camera);
     };
-    animate();
+
+    // Render one static frame immediately (so it's not blank)
+    renderer.render(scene, camera);
+
+    // Start animation only when visible in viewport
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const ref = sceneRef.current;
+        if (!ref) return;
+        if (entry.isIntersecting) {
+          ref.clock.start();
+          animate();
+        } else {
+          ref.clock.stop();
+          cancelAnimationFrame(ref.animId);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(container);
 
     const onResize = () => {
       if (!container || !sceneRef.current) return;
@@ -396,6 +415,7 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
     window.addEventListener("resize", onResize);
 
     return () => {
+      observer.disconnect();
       window.removeEventListener("resize", onResize);
       if (sceneRef.current) {
         cancelAnimationFrame(sceneRef.current.animId);

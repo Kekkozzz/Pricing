@@ -15,23 +15,21 @@ const projects = [
   { name: "EduPlatform", tag: "Web App" },
   { name: "Boutique Milano", tag: "Shop & SaaS" },
   { name: "GreenEnergy Corp", tag: "SEO & Marketing" },
-  { name: "Architetto Bianchi", tag: "Sito Web" },
-  { name: "LogiTrack", tag: "Web App" },
 ];
 
-const row1 = projects.slice(0, 5);
-const row2 = projects.slice(5, 10);
+const row1 = projects.slice(0, 4);
+const row2 = projects.slice(4, 8);
 
 function PlaceholderCard({ name, tag }: { name: string; tag: string }) {
   return (
-    <div className="shrink-0 w-80 aspect-[16/10] relative border border-border bg-surface/40 overflow-hidden group">
+    <div className="shrink-0 w-md aspect-16/10 relative border border-border bg-surface/40 overflow-hidden group">
       {/* Gradient background unique per card */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(201,185,154,0.08)_0%,transparent_70%)]" />
-      <div className="absolute inset-0 flex flex-col justify-end p-5">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-accent/60 font-mono mb-1">
+      <div className="absolute inset-0 flex flex-col justify-end p-7">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-accent/60 font-mono mb-2">
           {tag}
         </p>
-        <p className="text-sm font-medium text-foreground/80">{name}</p>
+        <p className="text-base font-medium text-foreground/80">{name}</p>
       </div>
       {/* Hover glow */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(ellipse_at_center,rgba(201,185,154,0.06)_0%,transparent_70%)]" />
@@ -79,7 +77,7 @@ export default function CaseStudies() {
 
   return (
     <section ref={sectionRef} className="relative py-24 md:py-32 overflow-hidden">
-      <div className="mx-auto max-w-6xl px-6 mb-16 md:mb-20">
+      <div className="mx-auto max-w-7xl px-8 mb-16 md:mb-20">
         <p className="text-[10px] uppercase tracking-[0.35em] text-accent mb-4 font-mono">
           Casi Studio
         </p>
@@ -91,10 +89,10 @@ export default function CaseStudies() {
       {/* Row 1 — moves left (appears to scroll right) */}
       <div
         ref={row1Ref}
-        className="flex gap-4 mb-4"
+        className="flex gap-6 mb-6"
         style={{ transform: "translateX(100px)" }}
       >
-        {[...row1, ...row1, ...row1].map((p, i) => (
+        {[...row1, ...row1].map((p, i) => (
           <PlaceholderCard key={`r1-${i}`} name={p.name} tag={p.tag} />
         ))}
       </div>
@@ -102,10 +100,10 @@ export default function CaseStudies() {
       {/* Row 2 — moves right (appears to scroll left) */}
       <div
         ref={row2Ref}
-        className="flex gap-4"
+        className="flex gap-6"
         style={{ transform: "translateX(-100px)" }}
       >
-        {[...row2, ...row2, ...row2].map((p, i) => (
+        {[...row2, ...row2].map((p, i) => (
           <PlaceholderCard key={`r2-${i}`} name={p.name} tag={p.tag} />
         ))}
       </div>
