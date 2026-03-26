@@ -70,7 +70,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: var(--scroll-pad, 6rem);
+  scroll-padding-top: var(--scroll-pad, 10rem);
 }
 
 body {

@@ -16,6 +16,7 @@ import type { ServiceCategory, Tier } from "../data/packages";
 import { siteConfig } from "../data/config";
 import WizardScene from "./WizardScene";
 import AIPreviewStep from "./AIPreviewStep";
+import type { AIFormData } from "./AIPreviewStep";
 
 function easeInOutCubic(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -59,6 +60,9 @@ export default function PricingSection() {
   const [transitioning, setTransitioning] = useState(false);
   const [slideDir, setSlideDir] = useState<"left" | "right">("left");
   const stepRef = useRef<HTMLDivElement>(null);
+  const [aiState, setAiState] = useState({ canGenerate: false, isGenerating: false, isComplete: false });
+  const [generateTrigger, setGenerateTrigger] = useState(0);
+  const [aiFormData, setAiFormData] = useState<AIFormData | null>(null);
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -110,6 +114,25 @@ export default function PricingSection() {
     step === 5;
 
   const goToStep = (next: number) => {
+    // Auto-fill contact form when entering step 6
+    if (next === 6 && aiFormData) {
+      const parts: string[] = [];
+      if (aiFormData.businessName) parts.push(`Attività: ${aiFormData.businessName}`);
+      if (aiFormData.sector) parts.push(`Settore: ${aiFormData.sector}`);
+      if (aiFormData.style) parts.push(`Stile: ${aiFormData.style}`);
+      if (aiFormData.colors.length > 0) parts.push(`Colori: ${aiFormData.colors.join(", ")}`);
+      if (aiFormData.description) parts.push(`\n${aiFormData.description}`);
+      if (aiFormData.referenceUrls) parts.push(`Riferimenti: ${aiFormData.referenceUrls}`);
+
+      if (parts.length > 0) {
+        setFormData((prev) => ({
+          ...prev,
+          name: prev.name || aiFormData.businessName,
+          message: prev.message || parts.join("\n"),
+        }));
+      }
+    }
+
     setSlideDir(next > step ? "left" : "right");
     setTransitioning(true);
     setTimeout(() => {
@@ -149,10 +172,11 @@ export default function PricingSection() {
     const targetY = container.scrollHeight;
     const distance = targetY - startY;
     const duration = 700;
-    const startTime = performance.now();
+    let startTime = 0;
     let rafId = 0;
 
     const animate = (now: number) => {
+      if (!startTime) startTime = now;
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const eased = easeInOutCubic(progress);
@@ -500,6 +524,9 @@ export default function PricingSection() {
         features={featureNames}
         addOns={addOnNames}
         onProceed={() => goToStep(step + 1)}
+        onStateChange={setAiState}
+        onFormDataChange={setAiFormData}
+        triggerGenerate={generateTrigger}
       />
     );
   }
@@ -720,7 +747,7 @@ export default function PricingSection() {
               ) : (
                 <div />
               )}
-              {step < 6 && (
+              {step < 6 && step !== 5 && (
                 <button
                   onClick={() => canNext && goToStep(step + 1)}
                   disabled={!canNext}
@@ -728,6 +755,32 @@ export default function PricingSection() {
                 >
                   Avanti →
                 </button>
+              )}
+              {step === 5 && (
+                aiState.isComplete ? (
+                  <button
+                    onClick={() => goToStep(6)}
+                    className="bg-foreground text-background px-8 py-3.5 text-sm font-medium tracking-wide hover:bg-accent transition-all duration-300"
+                  >
+                    Avanti →
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => goToStep(6)}
+                      className="text-sm text-muted hover:text-foreground transition-colors"
+                    >
+                      Salta
+                    </button>
+                    <button
+                      onClick={() => setGenerateTrigger((n) => n + 1)}
+                      disabled={!aiState.canGenerate || aiState.isGenerating}
+                      className="bg-accent text-background px-8 py-3.5 text-sm font-medium tracking-wide hover:bg-foreground transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {aiState.isGenerating ? "Generazione..." : "Genera Preview"}
+                    </button>
+                  </div>
+                )
               )}
             </div>
           </div>

@@ -119,7 +119,7 @@ export default function Navbar() {
       },
     });
 
-    document.documentElement.style.setProperty("--scroll-pad", "6rem");
+    document.documentElement.style.setProperty("--scroll-pad", "10rem");
   }, []);
 
   useEffect(() => {
@@ -154,7 +154,7 @@ export default function Navbar() {
             gsap.set(floating, { opacity: 0, scale: 0.85 });
             floating.style.pointerEvents = "none";
             isContracted.current = false;
-            document.documentElement.style.setProperty("--scroll-pad", "6rem");
+            document.documentElement.style.setProperty("--scroll-pad", "8rem");
           },
         });
         return;
@@ -181,7 +181,7 @@ export default function Navbar() {
           },
           onEnterBack: () => {
             isContracted.current = false;
-            document.documentElement.style.setProperty("--scroll-pad", "6rem");
+            document.documentElement.style.setProperty("--scroll-pad", "8rem");
             nav.style.pointerEvents = "auto";
             floating.style.pointerEvents = "none";
             if (activeTween.current) {
@@ -253,7 +253,7 @@ export default function Navbar() {
       ctx.revert();
       window.removeEventListener("resize", handleResize);
       clearTimeout(resizeTimer);
-      document.documentElement.style.setProperty("--scroll-pad", "6rem");
+      document.documentElement.style.setProperty("--scroll-pad", "8rem");
     };
   }, [contractNav, expandNav]);
 

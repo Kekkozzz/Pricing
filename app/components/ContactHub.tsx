@@ -1,278 +1,154 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { FileText, Calendar, MessageCircle, Mail } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { siteConfig } from "../data/config";
 
-function easeInOutCubic(t: number) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-}
+const testimonials = [
+  {
+    quote:
+      "Hanno trasformato la nostra idea in un sito che ha triplicato i contatti in tre mesi. Professionalità e attenzione al dettaglio impressionanti.",
+    name: "Marco R.",
+    role: "CEO, TechFlow",
+  },
+  {
+    quote:
+      "Il configuratore prezzi ci ha convinto subito — trasparenza totale. Il risultato finale ha superato ogni aspettativa.",
+    name: "Giulia B.",
+    role: "Founder, Boutique Milano",
+  },
+  {
+    quote:
+      "Dalla strategia SEO al redesign completo, hanno curato ogni aspetto. Il nostro traffico organico è cresciuto del 180%.",
+    name: "Alessandro T.",
+    role: "Marketing Director, GreenEnergy",
+  },
+  {
+    quote:
+      "Web app consegnata nei tempi, con una qualità del codice che il nostro team ha apprezzato enormemente. Collaborazione perfetta.",
+    name: "Sara M.",
+    role: "CTO, FinApp",
+  },
+];
+
+const INTERVAL = 5000;
 
 export default function ContactHub() {
-  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-  });
-  const [formStatus, setFormStatus] = useState<
-    "idle" | "sending" | "sent" | "error"
-  >("idle");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      setSelectedPackage(detail);
-    };
-    window.addEventListener("package-selected", handler);
-    return () => window.removeEventListener("package-selected", handler);
+  const resetTimer = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % testimonials.length);
+    }, INTERVAL);
   }, []);
 
-  const whatsappMessage = selectedPackage
-    ? `Ciao, sono interessato al pacchetto: ${selectedPackage}`
-    : "Ciao, vorrei informazioni sui vostri servizi web";
-
-  const emailSubject = selectedPackage
-    ? `Richiesta info: ${selectedPackage}`
-    : "Richiesta informazioni servizi web";
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormStatus("sending");
-
-    try {
-      const res = await fetch(siteConfig.contact.formspreeUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          _subject: emailSubject,
-          pacchetto: selectedPackage || "Nessuno selezionato",
-        }),
-      });
-      setFormStatus(res.ok ? "sent" : "error");
-    } catch {
-      console.log("Form submission (dev):", { ...formData, selectedPackage });
-      setFormStatus("sent");
-    }
-  };
-
-  const channels = [
-    {
-      icon: <FileText size={24} strokeWidth={1.5} />,
-      label: "Form",
-      sub: "Ti ricontattiamo noi",
-      action: "form",
-    },
-    {
-      icon: <Calendar size={24} strokeWidth={1.5} />,
-      label: "Prenota Call",
-      sub: "Scegli data e ora",
-      href: siteConfig.contact.calendlyUrl,
-    },
-    {
-      icon: <MessageCircle size={24} strokeWidth={1.5} />,
-      label: "WhatsApp",
-      sub: "Risposta immediata",
-      href: `https://wa.me/${siteConfig.contact.whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`,
-    },
-    {
-      icon: <Mail size={24} strokeWidth={1.5} />,
-      label: "Email",
-      sub: "Con riepilogo pacchetto",
-      href: `mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(emailSubject)}`,
-    },
-  ];
-
-  const [showForm, setShowForm] = useState(false);
-  const formContainerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    if (!showForm) return;
-
-    const startY = window.scrollY;
-    const elementTop = formContainerRef.current?.getBoundingClientRect().top;
-    if (elementTop === undefined) return;
-
-    const htmlEl = document.documentElement;
-    const previousScrollBehavior = htmlEl.style.scrollBehavior;
-    // Avoid combining CSS smooth scroll with custom RAF animation.
-    htmlEl.style.scrollBehavior = "auto";
-
-    const navOffset = 96;
-    const targetY = startY + elementTop - navOffset;
-    const distance = targetY - startY;
-    const duration = 900;
-    const startTime = performance.now();
-    let rafId = 0;
-
-    const animate = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = easeInOutCubic(progress);
-
-      window.scrollTo({
-        top: startY + distance * eased,
-      });
-
-      if (progress < 1) {
-        rafId = window.requestAnimationFrame(animate);
-      } else {
-        htmlEl.style.scrollBehavior = previousScrollBehavior;
-      }
-    };
-
-    rafId = window.requestAnimationFrame(animate);
-
+    setReducedMotion(
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+    resetTimer();
     return () => {
-      window.cancelAnimationFrame(rafId);
-      htmlEl.style.scrollBehavior = previousScrollBehavior;
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [showForm]);
+  }, [resetTimer]);
+
+  const handleDotClick = useCallback(
+    (index: number) => {
+      setActiveIndex(index);
+      resetTimer();
+    },
+    [resetTimer]
+  );
+
+  const whatsappMessage = encodeURIComponent(
+    "Ciao, vorrei informazioni sui vostri servizi web"
+  );
 
   return (
     <section id="contatti" className="relative py-24 md:py-32">
-      <div className="mx-auto max-w-7xl px-8">
-        {/* Header */}
-        <div className="mb-12 md:mb-16">
-          <p className="text-[10px] uppercase tracking-[0.35em] text-accent mb-4 font-mono">
-            Contatti
-          </p>
-          <h2 className="font-display text-3xl md:text-4xl tracking-tight">
-            Iniziamo il tuo progetto
-          </h2>
-        </div>
+      <div className="mx-auto max-w-3xl px-8 text-center">
+        {/* Headline */}
+        <h2 className="font-display text-4xl md:text-5xl tracking-tight mb-4">
+          Pronto a far crescere
+          <br />
+          il tuo business <em className="text-accent">online</em>?
+        </h2>
+        <p className="text-muted text-base md:text-lg mb-16">
+          Unisciti a chi ha già scelto di lavorare con noi
+        </p>
 
-        {/* Package summary */}
-        {selectedPackage && (
-          <div className="mb-10 border border-accent/30 bg-accent/3 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-muted mb-1 font-mono">
-                  Pacchetto selezionato
-                </p>
-                <p className="text-foreground font-medium">
-                  {selectedPackage}
-                </p>
-              </div>
-              <button
-                onClick={() => setSelectedPackage(null)}
-                className="text-xs text-muted hover:text-foreground transition-colors"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Channels */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-          {channels.map((ch) =>
-            ch.action === "form" ? (
-              <button
-                key={ch.label}
-                onClick={() => setShowForm(!showForm)}
-                className="group text-left border border-border bg-surface/30 p-6 md:p-8 hover:border-accent/30 hover:bg-surface/60 transition-all duration-500"
-              >
-                <span className="block mb-4 text-muted group-hover:text-accent transition-colors duration-300">{ch.icon}</span>
-                <span className="block text-sm font-medium tracking-tight group-hover:text-accent transition-colors duration-300">
-                  {ch.label}
-                </span>
-                <span className="block text-xs text-muted mt-1">{ch.sub}</span>
-              </button>
-            ) : (
-              <a
-                key={ch.label}
-                href={ch.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group border border-border bg-surface/30 p-6 md:p-8 hover:border-accent/30 hover:bg-surface/60 transition-all duration-500"
-              >
-                <span className="block mb-4 text-muted group-hover:text-accent transition-colors duration-300">{ch.icon}</span>
-                <span className="block text-sm font-medium tracking-tight group-hover:text-accent transition-colors duration-300">
-                  {ch.label}
-                </span>
-                <span className="block text-xs text-muted mt-1">{ch.sub}</span>
-              </a>
-            )
-          )}
-        </div>
-
-        {/* Inline form */}
-        {showForm && (
-          <div
-            ref={formContainerRef}
-            className="border border-border bg-surface/30 p-8 md:p-10 animate-fade-up"
+        {/* Testimonial carousel */}
+        <div className="relative mb-12 min-h-40 flex items-center justify-center">
+          {/* Decorative quote mark */}
+          <span
+            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 font-display text-[120px] leading-none text-accent/10 select-none pointer-events-none"
+            aria-hidden="true"
           >
-            {formStatus === "sent" ? (
-              <div className="text-center py-8">
-                <p className="font-display text-2xl mb-2">Grazie!</p>
-                <p className="text-sm text-muted">
-                  Ti ricontatteremo entro 24h.
+            &ldquo;
+          </span>
+
+          {testimonials.map((t, i) => (
+            <div
+              key={i}
+              className={`absolute inset-0 flex flex-col items-center justify-center px-4 ${
+                reducedMotion ? "" : "transition-opacity duration-700"
+              } ${i === activeIndex ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+            >
+              <blockquote className="text-foreground/90 text-base md:text-lg leading-relaxed italic max-w-2xl mb-6">
+                &ldquo;{t.quote}&rdquo;
+              </blockquote>
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  {t.name}
                 </p>
+                <p className="text-xs text-muted">{t.role}</p>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <input
-                    type="text"
-                    required
-                    placeholder="Nome e cognome"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="bg-transparent border border-border px-4 py-3 text-sm text-foreground placeholder:text-muted/50 focus:border-accent/50 focus:outline-none transition-colors"
-                  />
-                  <input
-                    type="email"
-                    required
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    className="bg-transparent border border-border px-4 py-3 text-sm text-foreground placeholder:text-muted/50 focus:border-accent/50 focus:outline-none transition-colors"
-                  />
-                </div>
-                <input
-                  type="tel"
-                  placeholder="Telefono (opzionale)"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  className="bg-transparent border border-border px-4 py-3 text-sm text-foreground placeholder:text-muted/50 focus:border-accent/50 focus:outline-none transition-colors"
-                />
-                <textarea
-                  rows={4}
-                  placeholder="Descrivi il tuo progetto..."
-                  value={formData.message}
-                  onChange={(e) =>
-                    setFormData({ ...formData, message: e.target.value })
-                  }
-                  className="bg-transparent border border-border px-4 py-3 text-sm text-foreground placeholder:text-muted/50 focus:border-accent/50 focus:outline-none transition-colors resize-none"
-                />
-                <button
-                  type="submit"
-                  disabled={formStatus === "sending"}
-                  className="self-start bg-foreground text-background px-8 py-3 text-sm font-medium tracking-wide hover:bg-accent transition-all duration-300 disabled:opacity-50"
-                >
-                  {formStatus === "sending"
-                    ? "Invio in corso..."
-                    : "Invia richiesta"}
-                </button>
-                {formStatus === "error" && (
-                  <p className="text-red-400 text-xs">
-                    Errore nell&apos;invio. Riprova o contattaci via WhatsApp.
-                  </p>
-                )}
-              </form>
-            )}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
+
+        {/* Dot indicators */}
+        <div className="flex items-center justify-center gap-2 mb-12">
+          {testimonials.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => handleDotClick(i)}
+              aria-label={`Testimonial ${i + 1}`}
+              className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                i === activeIndex
+                  ? "bg-accent"
+                  : "bg-border hover:bg-muted"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* CTA row */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href="#pricing"
+            className="group inline-flex items-center justify-center gap-2 bg-foreground text-background px-8 py-3.5 text-sm font-medium tracking-wide hover:bg-accent hover:text-background transition-all duration-300"
+          >
+            Configura il tuo pacchetto
+            <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">
+              →
+            </span>
+          </a>
+          <a
+            href={`https://wa.me/${siteConfig.contact.whatsappNumber}?text=${whatsappMessage}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center px-8 py-3.5 text-sm tracking-wide border border-border text-muted hover:border-foreground hover:text-foreground transition-all duration-300"
+          >
+            Scrivici su WhatsApp
+          </a>
+        </div>
       </div>
+
+      {/* Bottom line */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-border to-transparent" />
     </section>
   );
 }

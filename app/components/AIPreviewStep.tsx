@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Upload, X, Maximize2, Minimize2, Sparkles, RotateCcw, ArrowRight } from "lucide-react";
+import { Upload, X, Maximize2, Minimize2, RotateCcw, ArrowRight } from "lucide-react";
 import PreviewLoading from "./PreviewLoading";
 
 const SECTORS = [
@@ -17,6 +17,15 @@ const COLOR_PRESETS = ["#e74c3c", "#3498db", "#2ecc71", "#9b59b6", "#f39c12", "#
 
 type GenerationState = "idle" | "generating-image" | "complete" | "error";
 
+export type AIFormData = {
+  businessName: string;
+  sector: string;
+  style: string;
+  colors: string[];
+  description: string;
+  referenceUrls: string;
+};
+
 type AIPreviewStepProps = {
   serviceName: string;
   serviceId: string;
@@ -24,6 +33,9 @@ type AIPreviewStepProps = {
   features: string[];
   addOns: string[];
   onProceed: () => void;
+  onStateChange?: (state: { canGenerate: boolean; isGenerating: boolean; isComplete: boolean }) => void;
+  onFormDataChange?: (data: AIFormData) => void;
+  triggerGenerate?: number;
 };
 
 export default function AIPreviewStep({
@@ -33,6 +45,9 @@ export default function AIPreviewStep({
   features,
   addOns,
   onProceed,
+  onStateChange,
+  onFormDataChange,
+  triggerGenerate,
 }: AIPreviewStepProps) {
   const [businessName, setBusinessName] = useState("");
   const [sector, setSector] = useState("");
@@ -49,7 +64,6 @@ export default function AIPreviewStep({
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const colorInputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const fullscreenRef = useRef<HTMLDivElement>(null);
 
@@ -87,8 +101,34 @@ export default function AIPreviewStep({
     );
   }
 
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [customColorInput, setCustomColorInput] = useState("#c9b99a");
+  const colorPickerRef = useRef<HTMLDivElement>(null);
+
+  // Close picker on outside click
+  useEffect(() => {
+    if (!showColorPicker) return;
+    const handler = (e: MouseEvent) => {
+      if (colorPickerRef.current && !colorPickerRef.current.contains(e.target as Node)) {
+        setShowColorPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showColorPicker]);
+
+  function applyCustomColor(color: string) {
+    setSelectedColors((prev) => {
+      const withoutCustom = prev.filter((c) => COLOR_PRESETS.includes(c));
+      return withoutCustom.length < 3
+        ? [...withoutCustom, color]
+        : prev;
+    });
+  }
+
   function handleCustomColor(e: React.ChangeEvent<HTMLInputElement>) {
     const color = e.target.value;
+    setCustomColorInput(color);
     setSelectedColors((prev) => {
       const withoutCustom = prev.filter((c) => COLOR_PRESETS.includes(c));
       return withoutCustom.length < 3
@@ -163,6 +203,32 @@ export default function AIPreviewStep({
   }
 
   const isGenerating = state === "generating-image";
+  const isComplete = state === "complete";
+
+  // Notify parent of state changes
+  useEffect(() => {
+    onStateChange?.({ canGenerate: !!canGenerate, isGenerating, isComplete });
+  }, [canGenerate, isGenerating, isComplete, onStateChange]);
+
+  // Notify parent of form data changes
+  useEffect(() => {
+    onFormDataChange?.({
+      businessName,
+      sector: effectiveSector,
+      style,
+      colors: selectedColors,
+      description,
+      referenceUrls,
+    });
+  }, [businessName, effectiveSector, style, selectedColors, description, referenceUrls, onFormDataChange]);
+
+  // Parent triggers generation via incrementing triggerGenerate
+  useEffect(() => {
+    if (triggerGenerate && triggerGenerate > 0 && canGenerate && !isGenerating) {
+      handleGenerate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [triggerGenerate]);
 
   return (
     <>
@@ -262,7 +328,7 @@ export default function AIPreviewStep({
               </div>
             </div>
             <div>
-              <label className="text-[11px] text-muted mb-1.5 block">
+              <label className="text-[11px] text-white mb-1.5 block">
                 Palette Colori <span className="text-muted/50">(max 3)</span>
               </label>
               <div className="flex gap-2.5 items-center">
@@ -281,29 +347,62 @@ export default function AIPreviewStep({
                     }}
                   />
                 ))}
-                <input
-                  ref={colorInputRef}
-                  type="color"
-                  onChange={handleCustomColor}
-                  className="hidden"
-                />
+                {/* Custom color picker */}
                 {(() => {
                   const customColor = selectedColors.find((c) => !COLOR_PRESETS.includes(c));
                   return (
-                    <button
-                      type="button"
-                      onClick={() => colorInputRef.current?.click()}
-                      className="w-7 h-7 rounded-full border border-dashed border-border flex items-center justify-center text-muted hover:border-accent hover:text-accent transition-all duration-200"
-                      style={customColor ? {
-                        backgroundColor: customColor,
-                        borderStyle: "solid",
-                        borderColor: customColor,
-                        boxShadow: `0 0 0 2px var(--color-background), 0 0 0 3px ${customColor}`,
-                      } : undefined}
-                      title="Colore personalizzato"
-                    >
-                      {!customColor && <span className="text-xs leading-none">+</span>}
-                    </button>
+                    <div className="relative" ref={colorPickerRef}>
+                      <button
+                        type="button"
+                        onClick={() => setShowColorPicker(!showColorPicker)}
+                        className="w-7 h-7 rounded-full border border-dashed border-border flex items-center justify-center text-muted hover:border-accent hover:text-accent transition-all duration-200"
+                        style={customColor ? {
+                          backgroundColor: customColor,
+                          borderStyle: "solid",
+                          borderColor: customColor,
+                          boxShadow: `0 0 0 2px var(--color-background), 0 0 0 3px ${customColor}`,
+                        } : undefined}
+                        title="Colore personalizzato"
+                      >
+                        {!customColor && <span className="text-xs leading-none">+</span>}
+                      </button>
+
+                      {showColorPicker && (
+                        <div className="absolute bottom-full mb-3 right-0 bg-surface border border-border p-3 shadow-lg z-20 w-52">
+                          <p className="text-[10px] text-muted mb-2 uppercase tracking-wider">Colore personalizzato</p>
+                          <input
+                            type="color"
+                            value={customColorInput}
+                            onChange={handleCustomColor}
+                            className="w-full h-8 cursor-pointer border-0 bg-transparent mb-2"
+                          />
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={customColorInput}
+                              onChange={(e) => {
+                                setCustomColorInput(e.target.value);
+                                if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) {
+                                  applyCustomColor(e.target.value);
+                                }
+                              }}
+                              placeholder="#000000"
+                              className="flex-1 bg-transparent border border-border px-2 py-1.5 text-xs font-mono text-foreground focus:border-accent/50 focus:outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                applyCustomColor(customColorInput);
+                                setShowColorPicker(false);
+                              }}
+                              className="bg-accent text-background px-3 py-1.5 text-xs font-medium hover:bg-foreground transition-colors"
+                            >
+                              OK
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   );
                 })()}
               </div>
@@ -382,16 +481,6 @@ export default function AIPreviewStep({
             </div>
           )}
 
-          {/* Generate button */}
-          <button
-            type="button"
-            onClick={handleGenerate}
-            disabled={!canGenerate}
-            className="bg-foreground text-background px-8 py-3 text-sm font-medium tracking-wide hover:bg-accent transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            <Sparkles size={14} />
-            Genera Preview AI
-          </button>
         </div>
       )}
 
