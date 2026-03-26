@@ -115,6 +115,7 @@ export default function PricingSection() {
     setTimeout(() => {
       setStep(next);
       setTransitioning(false);
+      stepRef.current?.scrollTo({ top: 0 });
     }, 200);
   };
 
@@ -669,9 +670,9 @@ export default function PricingSection() {
             Configura il tuo pacchetto
           </h2>
         </div>
-        <div className="grid border border-border transition-all duration-700 ease-in-out md:grid-cols-[var(--left-col)_1fr]" style={{ "--left-col": step === 5 ? "0fr" : "1fr", height: step === 5 ? "auto" : "700px" } as React.CSSProperties}>
-          {/* Left Panel — split: 3D top + text bottom (collapses on step 5) */}
-          <div className={`hidden md:flex flex-col border-r border-border transition-opacity duration-500 ${step === 5 ? "opacity-0 overflow-hidden" : "opacity-100 overflow-hidden"}`}>
+        <div className="grid grid-cols-1 md:grid-cols-2 border border-border h-175">
+          {/* Left Panel — split: 3D top + text bottom */}
+          <div className="hidden md:flex flex-col border-r border-border overflow-hidden">
             {/* 3D Scene area */}
             <div className="relative h-[65%] bg-surface/20 overflow-hidden">
               <WizardScene serviceId={cat?.id ?? null} step={step} />
@@ -683,9 +684,9 @@ export default function PricingSection() {
               {renderLeftPanelContent()}
             </div>
           </div>
-          {step !== 5 && renderMobileHeader()}
+          {renderMobileHeader()}
 
-          <div className={`flex flex-col p-8 md:p-12 lg:p-14 ${step === 5 ? "min-h-125" : "h-full"} overflow-hidden transition-all duration-700 ease-in-out`}>
+          <div className="flex flex-col p-8 md:p-12 lg:p-14 h-full overflow-hidden">
             <div className="hidden md:block shrink-0">
               <ProgressBar current={step} />
             </div>

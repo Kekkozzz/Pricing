@@ -402,12 +402,12 @@ export default function AIPreviewStep({
 
       {/* Image result */}
       {imageBase64 && state === "complete" && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3 flex-1 min-h-0">
           <div
             ref={fullscreenRef}
-            className="relative border border-border rounded overflow-hidden group bg-black"
+            className="relative border border-border rounded overflow-hidden group bg-black flex-1 min-h-0"
           >
-            <div className="px-3 py-2 border-b border-border bg-surface/30 flex items-center justify-between">
+            <div className="px-3 py-1.5 border-b border-border bg-surface/30 flex items-center justify-between shrink-0">
               <p className="text-[10px] uppercase tracking-wider text-accent font-mono">
                 Mockup — {businessName}
               </p>
@@ -424,36 +424,36 @@ export default function AIPreviewStep({
               src={imageBase64}
               alt={`Mockup preview per ${businessName}`}
               className={isFullscreen
-                ? "w-full h-[calc(100vh-41px)] object-contain"
-                : "w-full"
+                ? "w-full h-[calc(100vh-33px)] object-contain"
+                : "w-full max-h-85 object-contain"
               }
             />
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-2 shrink-0">
             <button
               type="button"
               onClick={toggleFullscreen}
-              className="flex-1 bg-foreground text-background px-8 py-3.5 text-sm font-medium tracking-wide hover:bg-accent transition-all duration-300 flex items-center justify-center gap-2"
+              className="flex-1 bg-foreground text-background px-4 py-2.5 text-xs font-medium tracking-wide hover:bg-accent transition-all duration-300 flex items-center justify-center gap-1.5"
             >
-              <Maximize2 size={14} />
+              <Maximize2 size={12} />
               Schermo Intero
             </button>
             <button
               type="button"
               onClick={handleGenerate}
-              className="px-6 py-3.5 text-sm font-medium tracking-wide border border-border text-muted hover:text-foreground hover:border-accent/50 transition-all duration-300 flex items-center gap-2"
+              className="px-4 py-2.5 text-xs font-medium tracking-wide border border-border text-muted hover:text-foreground hover:border-accent/50 transition-all duration-300 flex items-center gap-1.5"
             >
-              <RotateCcw size={14} />
+              <RotateCcw size={12} />
               Rigenera
             </button>
             <button
               type="button"
               onClick={onProceed}
-              className="px-6 py-3.5 text-sm font-medium tracking-wide border border-accent text-accent hover:bg-accent/10 transition-all duration-300 flex items-center gap-2"
+              className="px-4 py-2.5 text-xs font-medium tracking-wide border border-accent text-accent hover:bg-accent/10 transition-all duration-300 flex items-center gap-1.5"
             >
               Procedi
-              <ArrowRight size={14} />
+              <ArrowRight size={12} />
             </button>
           </div>
         </div>
