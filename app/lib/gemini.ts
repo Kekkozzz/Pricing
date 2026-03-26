@@ -1,6 +1,10 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY ?? "" });
+const apiKey = process.env.GEMINI_API_KEY ?? "";
+if (!apiKey) {
+  console.warn("[gemini] ⚠️  GEMINI_API_KEY is not set — image generation will fail.");
+}
+const ai = new GoogleGenAI({ apiKey });
 
 const IMAGE_MODEL = "gemini-3.1-flash-image-preview";
 const MAX_RETRIES = 1;
@@ -74,7 +78,7 @@ export async function generateImage(prompt: string): Promise<string> {
         model: IMAGE_MODEL,
         contents: prompt,
         config: {
-          responseModalities: [Modality.IMAGE],
+          responseModalities: [Modality.TEXT, Modality.IMAGE],
         },
       }),
       IMAGE_TIMEOUT
@@ -88,6 +92,11 @@ export async function generateImage(prompt: string): Promise<string> {
       }
     }
 
+    // Log what the model actually returned so failures aren't a black box
+    console.warn(
+      "[gemini] No image in response. Parts received:",
+      parts.map((p) => (p.text ? `text(${p.text.length} chars)` : JSON.stringify(Object.keys(p))))
+    );
     throw new GeminiNoImageError();
   });
 }
