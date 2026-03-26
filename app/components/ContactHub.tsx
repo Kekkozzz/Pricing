@@ -47,7 +47,7 @@ export default function ContactHub() {
   useEffect(() => {
     setReducedMotion(
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    );
+    ); 
     resetTimer();
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
