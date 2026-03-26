@@ -297,6 +297,7 @@ export const categories: ServiceCategory[] = [
     id: "mobile-app",
     name: "Mobile App",
     icon: "smartphone",
+    lottie: "/Mobile.json",
     description:
       "La tua app su ogni schermo — applicazioni mobile native e cross-platform con design intuitivo e performance ottimali",
     startingPrice: "€3.999",
