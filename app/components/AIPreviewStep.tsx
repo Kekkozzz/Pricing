@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Upload, X, Maximize2, Minimize2 } from "lucide-react";
+import { Upload, X, Maximize2, Minimize2, Sparkles, RotateCcw, ArrowRight } from "lucide-react";
 import PreviewLoading from "./PreviewLoading";
 
 const SECTORS = [
@@ -182,7 +182,7 @@ export default function AIPreviewStep({
           {/* Row 1: Nome + Settore */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-[11px] text-muted mb-1.5 block">
+              <label className="text-[11px] text-white mb-1.5 block">
                 Nome Attività *
               </label>
               <input
@@ -195,7 +195,7 @@ export default function AIPreviewStep({
               />
             </div>
             <div>
-              <label className="text-[11px] text-muted mb-1.5 block">
+              <label className="text-[11px] text-white mb-1.5 block">
                 Settore *
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -241,7 +241,7 @@ export default function AIPreviewStep({
           {/* Row 2: Stile + Colori */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-[11px] text-muted mb-1.5 block">
+              <label className="text-[11px] text-white mb-1.5 block">
                 Stile Preferito *
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -387,9 +387,10 @@ export default function AIPreviewStep({
             type="button"
             onClick={handleGenerate}
             disabled={!canGenerate}
-            className="bg-foreground text-background px-8 py-3 text-sm font-medium tracking-wide hover:bg-accent transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed"
+            className="bg-foreground text-background px-8 py-3 text-sm font-medium tracking-wide hover:bg-accent transition-all duration-300 disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            ✨ Genera Preview AI
+            <Sparkles size={14} />
+            Genera Preview AI
           </button>
         </div>
       )}
@@ -441,16 +442,18 @@ export default function AIPreviewStep({
             <button
               type="button"
               onClick={handleGenerate}
-              className="px-6 py-3.5 text-sm font-medium tracking-wide border border-border text-muted hover:text-foreground hover:border-accent/50 transition-all duration-300"
+              className="px-6 py-3.5 text-sm font-medium tracking-wide border border-border text-muted hover:text-foreground hover:border-accent/50 transition-all duration-300 flex items-center gap-2"
             >
+              <RotateCcw size={14} />
               Rigenera
             </button>
             <button
               type="button"
               onClick={onProceed}
-              className="px-6 py-3.5 text-sm font-medium tracking-wide border border-accent text-accent hover:bg-accent/10 transition-all duration-300"
+              className="px-6 py-3.5 text-sm font-medium tracking-wide border border-accent text-accent hover:bg-accent/10 transition-all duration-300 flex items-center gap-2"
             >
               Procedi
+              <ArrowRight size={14} />
             </button>
           </div>
         </div>
