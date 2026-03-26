@@ -127,7 +127,6 @@ export default function PricingSection() {
       if (parts.length > 0) {
         setFormData((prev) => ({
           ...prev,
-          name: prev.name || aiFormData.businessName,
           message: prev.message || parts.join("\n"),
         }));
       }

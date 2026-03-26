@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Upload, X, Maximize2, Minimize2, RotateCcw, ArrowRight } from "lucide-react";
+import Image from "next/image";
 import PreviewLoading from "./PreviewLoading";
 
 const SECTORS = [
@@ -509,9 +510,12 @@ export default function AIPreviewStep({
                 {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
               </button>
             </div>
-            <img
+            <Image
               src={imageBase64}
               alt={`Mockup preview per ${businessName}`}
+              width={1440}
+              height={900}
+              unoptimized
               className={isFullscreen
                 ? "w-full h-[calc(100vh-33px)] object-contain"
                 : "w-full max-h-85 object-contain"

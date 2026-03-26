@@ -2,6 +2,7 @@ import { type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import {
   generateImage,
+  GeminiConfigError,
   GeminiTimeoutError,
   GeminiRateLimitError,
   GeminiNoImageError,
@@ -98,6 +99,13 @@ export async function POST(request: NextRequest) {
       return Response.json(
         { error: "La generazione sta impiegando troppo tempo. Riprova tra qualche istante." },
         { status: 504 }
+      );
+    }
+
+    if (err instanceof GeminiConfigError) {
+      return Response.json(
+        { error: "Servizio preview AI non configurato. Controlla GEMINI_API_KEY in produzione." },
+        { status: 503 }
       );
     }
 

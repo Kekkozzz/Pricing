@@ -313,7 +313,8 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
     selectedGroup: THREE.Group | null;
     state: SceneState;
     animId: number;
-    clock: THREE.Clock;
+    timer: THREE.Timer;
+    isRunning: boolean;
   } | null>(null);
   const prevServiceRef = useRef<string | null>(null);
   const prevStepRef = useRef<number>(step);
@@ -358,17 +359,19 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
     });
     scene.add(orbitGroup);
 
-    const clock = new THREE.Clock(false); // start paused
+    const timer = new THREE.Timer();
+    timer.connect(document);
     sceneRef.current = {
       renderer, scene, camera, orbitGroup, orbitItems,
-      selectedGroup: null, state: "idle", animId: 0, clock,
+      selectedGroup: null, state: "idle", animId: 0, timer, isRunning: false,
     };
 
-    const animate = () => {
+    const animate = (timestamp?: number) => {
       const ref = sceneRef.current;
-      if (!ref) return;
-      ref.animId = requestAnimationFrame(animate);
-      const elapsed = ref.clock.getElapsedTime();
+      if (!ref || !ref.isRunning) return;
+
+      ref.timer.update(timestamp);
+      const elapsed = ref.timer.getElapsed();
 
       if (ref.state === "idle") {
         ref.orbitGroup.rotation.y = elapsed * 0.15;
@@ -383,6 +386,7 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
       }
 
       ref.renderer.render(ref.scene, ref.camera);
+      ref.animId = requestAnimationFrame(animate);
     };
 
     // Render one static frame immediately (so it's not blank)
@@ -394,11 +398,16 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
         const ref = sceneRef.current;
         if (!ref) return;
         if (entry.isIntersecting) {
-          ref.clock.start();
-          animate();
+          if (!ref.isRunning) {
+            ref.isRunning = true;
+            ref.timer.reset();
+            ref.animId = requestAnimationFrame(animate);
+          }
         } else {
-          ref.clock.stop();
-          cancelAnimationFrame(ref.animId);
+          if (ref.isRunning) {
+            ref.isRunning = false;
+            cancelAnimationFrame(ref.animId);
+          }
         }
       },
       { threshold: 0.1 }
@@ -418,7 +427,9 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
       observer.disconnect();
       window.removeEventListener("resize", onResize);
       if (sceneRef.current) {
+        sceneRef.current.isRunning = false;
         cancelAnimationFrame(sceneRef.current.animId);
+        sceneRef.current.timer.dispose();
         sceneRef.current.renderer.dispose();
         container.removeChild(sceneRef.current.renderer.domElement);
         sceneRef.current = null;

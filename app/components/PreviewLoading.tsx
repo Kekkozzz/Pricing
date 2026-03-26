@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Image } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
 
 const messages = [
   "Sto progettando la tua homepage...",
@@ -39,7 +39,7 @@ export default function PreviewLoading() {
         <div className="absolute inset-0 rounded-full bg-accent/10 animate-ping" />
         <div className="absolute inset-2 rounded-full bg-accent/20 animate-pulse" />
         <div className="absolute inset-4 rounded-full bg-accent/30 flex items-center justify-center">
-          <Image size={20} className="text-accent" />
+          <ImageIcon size={20} className="text-accent" />
         </div>
       </div>
 

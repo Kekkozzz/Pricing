@@ -23,8 +23,14 @@ function ServiceCard({
   const cardRef = useRef<HTMLAnchorElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [animationData, setAnimationData] = useState<any>(null);
-  const [isTouch, setIsTouch] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isTouch, setIsTouch] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !window.matchMedia("(hover: hover)").matches;
+  });
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
 
   const handleClick = useCallback(() => {
     window.dispatchEvent(
@@ -32,12 +38,29 @@ function ServiceCard({
     );
   }, [index]);
 
-  // Load lottie data + detect touch/motion preferences
+  // Keep media query preferences in sync.
   useEffect(() => {
-    setIsTouch(!window.matchMedia("(hover: hover)").matches);
-    setPrefersReducedMotion(
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    );
+    const hoverQuery = window.matchMedia("(hover: hover)");
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const onHoverChange = (event: MediaQueryListEvent) => {
+      setIsTouch(!event.matches);
+    };
+    const onMotionChange = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches);
+    };
+
+    hoverQuery.addEventListener("change", onHoverChange);
+    motionQuery.addEventListener("change", onMotionChange);
+
+    return () => {
+      hoverQuery.removeEventListener("change", onHoverChange);
+      motionQuery.removeEventListener("change", onMotionChange);
+    };
+  }, []);
+
+  // Load lottie data.
+  useEffect(() => {
 
     if (!cat.lottie) return;
 

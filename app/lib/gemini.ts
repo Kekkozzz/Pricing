@@ -32,6 +32,13 @@ export class GeminiNoImageError extends Error {
   }
 }
 
+export class GeminiConfigError extends Error {
+  constructor() {
+    super("GEMINI_API_KEY is not configured");
+    this.name = "GeminiConfigError";
+  }
+}
+
 function isRateLimitError(err: unknown): boolean {
   if (err instanceof Error) {
     return (
@@ -72,6 +79,10 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 export async function generateImage(prompt: string): Promise<string> {
+  if (!apiKey) {
+    throw new GeminiConfigError();
+  }
+
   return withRetry(async () => {
     const response = await withTimeout(
       ai.models.generateContent({
