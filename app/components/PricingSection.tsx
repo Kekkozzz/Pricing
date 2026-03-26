@@ -670,13 +670,22 @@ export default function PricingSection() {
             Configura il tuo pacchetto
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 border border-border h-175">
-          {/* Left Panel — split: 3D top + text bottom */}
-          <div className="hidden md:flex flex-col border-r border-border overflow-hidden">
+        <div className="border border-border h-175 flex">
+          {/* Left Panel — collapses on step 5 */}
+          <div
+            style={{
+              width: step === 5 ? "0%" : "50%",
+              opacity: step === 5 ? 0 : 1,
+              borderRightWidth: step === 5 ? 0 : 1,
+              transition: step === 5
+                ? "opacity 0.2s ease-out, width 0.6s ease-in-out 0.1s, border-right-width 0.3s ease-out"
+                : "opacity 0.4s ease-out 0.3s, width 0.6s ease-in-out, border-right-width 0.3s ease-out 0.5s",
+            }}
+            className="hidden md:flex flex-col border-r border-border overflow-hidden"
+          >
             {/* 3D Scene area */}
             <div className="relative h-[65%] bg-surface/20 overflow-hidden">
               <WizardScene serviceId={cat?.id ?? null} step={step} />
-              {/* Fade gradient at bottom for smooth transition */}
               <div className="absolute bottom-0 left-0 right-0 h-16 bg-linear-to-t from-surface/40 to-transparent z-10" />
             </div>
             {/* Text / Summary area */}
@@ -686,7 +695,7 @@ export default function PricingSection() {
           </div>
           {renderMobileHeader()}
 
-          <div className="flex flex-col p-8 md:p-12 lg:p-14 h-full overflow-hidden">
+          <div className="flex-1 flex flex-col p-8 md:p-12 lg:p-14 h-full overflow-hidden transition-all duration-700 ease-in-out">
             <div className="hidden md:block shrink-0">
               <ProgressBar current={step} />
             </div>
