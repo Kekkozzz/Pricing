@@ -255,17 +255,24 @@ export default function AIPreviewStep({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [triggerGenerate]);
 
+  const isResult = imageBase64 && state === "complete";
+
   return (
     <>
-      <p className="text-[10px] uppercase tracking-[0.2em] text-accent mb-2 font-mono">
-        Step 5 di 6
-      </p>
-      <h3 className="font-display text-2xl md:text-3xl mb-2">
-        Preview AI del tuo sito
-      </h3>
-      <p className="text-sm text-muted mb-6">
-        Raccontaci la tua attività e genereremo una preview personalizzata
-      </p>
+      {/* Header — hidden when preview result is shown (moves into grid) */}
+      {!isResult && (
+        <>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-accent mb-2 font-mono">
+            Step 5 di 6
+          </p>
+          <h3 className="font-display text-2xl md:text-3xl mb-2">
+            Preview AI del tuo sito
+          </h3>
+          <p className="text-sm text-muted mb-6">
+            Raccontaci la tua attività e genereremo una preview personalizzata
+          </p>
+        </>
+      )}
 
       {/* Form */}
       {(state === "idle" || state === "error") && (
@@ -514,64 +521,99 @@ export default function AIPreviewStep({
         <PreviewLoading />
       )}
 
-      {/* Image result */}
-      {imageBase64 && state === "complete" && (
-        <div className="flex flex-col gap-3 flex-1 min-h-0">
-          <div
-            ref={fullscreenRef}
-            className="relative border border-border rounded overflow-hidden group bg-black flex-1 min-h-0"
-          >
-            <div className="px-3 py-1.5 border-b border-border bg-surface/30 flex items-center justify-between shrink-0">
-              <p className="text-[10px] uppercase tracking-wider text-accent font-mono">
+      {/* Image result — two-column layout starting from top */}
+      {isResult && (
+        <div className="grid grid-cols-1 md:grid-cols-[0.8fr_2fr] gap-6 items-start">
+          {/* Left column: header + CTAs */}
+          <div className="flex flex-col gap-4 md:gap-5 xl:gap-6">
+            <div>
+              <p className="text-[10px] xl:text-[11px] uppercase tracking-[0.2em] text-accent font-mono mb-1 xl:mb-2">
                 Mockup — {businessName}
               </p>
+              <h3 className="font-display text-xl md:text-2xl xl:text-3xl mb-1.5 xl:mb-2">
+                Il tuo sito, immaginato
+              </h3>
+              <p className="text-xs xl:text-sm text-muted leading-relaxed">
+                Visualizzala a schermo intero per coglierne ogni dettaglio.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5 xl:gap-2">
               <button
                 type="button"
                 onClick={toggleFullscreen}
+                className="bg-foreground text-background px-4 py-2.5 xl:py-3 text-xs xl:text-sm font-medium tracking-wide hover:bg-accent transition-all duration-300 flex items-center justify-center gap-2 group"
+              >
+                <Maximize2 size={13} className="group-hover:scale-110 transition-transform xl:w-4! xl:h-4!" />
+                Schermo Intero
+              </button>
+              <button
+                type="button"
+                onClick={handleGenerate}
+                className="px-4 py-2 xl:py-2.5 text-xs xl:text-sm font-medium tracking-wide border border-border text-muted hover:text-foreground hover:border-accent/50 transition-all duration-300 flex items-center justify-center gap-1.5"
+              >
+                <RotateCcw size={11} />
+                Rigenera
+              </button>
+              <button
+                type="button"
+                onClick={onProceed}
+                className="px-4 py-2 xl:py-2.5 text-xs xl:text-sm font-medium tracking-wide border border-accent text-accent hover:bg-accent/10 transition-all duration-300 flex items-center justify-center gap-1.5"
+              >
+                Procedi
+                <ArrowRight size={11} />
+              </button>
+            </div>
+          </div>
+
+          {/* Right column: image filling available height */}
+          <div
+            ref={fullscreenRef}
+            className="relative border border-border rounded overflow-hidden bg-black cursor-pointer"
+            onClick={!isFullscreen ? toggleFullscreen : undefined}
+          >
+            <div className="px-3 py-1 border-b border-border bg-surface/30 flex items-center justify-between">
+              <p className="text-[10px] uppercase tracking-wider text-accent font-mono">
+                Preview
+              </p>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
                 className="text-muted hover:text-accent transition-colors"
                 title={isFullscreen ? "Esci da schermo intero" : "Schermo intero"}
               >
                 {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
               </button>
             </div>
-            <Image
-              src={imageBase64}
-              alt={`Mockup preview per ${businessName}`}
-              width={1440}
-              height={900}
-              unoptimized
-              className={isFullscreen
-                ? "w-full h-[calc(100vh-33px)] object-contain"
-                : "w-full max-h-85 object-contain"
-              }
-            />
-          </div>
-
-          <div className="flex gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              className="flex-1 bg-foreground text-background px-4 py-2.5 text-xs font-medium tracking-wide hover:bg-accent transition-all duration-300 flex items-center justify-center gap-1.5"
-            >
-              <Maximize2 size={12} />
-              Schermo Intero
-            </button>
-            <button
-              type="button"
-              onClick={handleGenerate}
-              className="px-4 py-2.5 text-xs font-medium tracking-wide border border-border text-muted hover:text-foreground hover:border-accent/50 transition-all duration-300 flex items-center gap-1.5"
-            >
-              <RotateCcw size={12} />
-              Rigenera
-            </button>
-            <button
-              type="button"
-              onClick={onProceed}
-              className="px-4 py-2.5 text-xs font-medium tracking-wide border border-accent text-accent hover:bg-accent/10 transition-all duration-300 flex items-center gap-1.5"
-            >
-              Procedi
-              <ArrowRight size={12} />
-            </button>
+            <div className={isFullscreen ? "" : "relative max-h-[min(50vh,360px)] overflow-hidden"}>
+              <Image
+                src={imageBase64}
+                alt={`Mockup preview per ${businessName}`}
+                width={1440}
+                height={900}
+                unoptimized
+                className={isFullscreen
+                  ? "w-full h-[calc(100vh-33px)] object-contain"
+                  : "w-full object-cover object-top"
+                }
+              />
+              {/* Overlay to invite fullscreen */}
+              {!isFullscreen && (
+                <>
+                  <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-black via-black/60 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/40 transition-all duration-300 group/overlay">
+                    <div className="opacity-0 group-hover/overlay:opacity-100 transition-all duration-300 scale-90 group-hover/overlay:scale-100 flex flex-col items-center gap-2">
+                      <div className="w-12 h-12 rounded-full border-2 border-white/80 flex items-center justify-center backdrop-blur-sm bg-white/10">
+                        <Maximize2 size={20} className="text-white" />
+                      </div>
+                      <span className="text-xs font-medium tracking-wide text-white">
+                        Schermo intero
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
