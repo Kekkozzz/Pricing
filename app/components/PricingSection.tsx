@@ -76,6 +76,7 @@ export default function PricingSection() {
       const url = new URL(window.location.href);
       url.searchParams.delete("restore");
       window.history.replaceState({}, "", url.pathname + url.search + url.hash);
+      document.cookie = "auth_next=; Path=/; Max-Age=0; SameSite=Lax";
       return saved as {
         catIndex: number | null;
         tierKey: TierKey | null;
@@ -150,6 +151,20 @@ export default function PricingSection() {
       savedAt: Date.now(),
     };
     localStorage.setItem(WIZARD_STORAGE_KEY, JSON.stringify(state));
+
+    const authReturnPath = "/?restore=wizard#pricing";
+    const cookieParts = [
+      `auth_next=${encodeURIComponent(authReturnPath)}`,
+      "Path=/",
+      `Max-Age=${Math.floor(WIZARD_MAX_AGE / 1000)}`,
+      "SameSite=Lax",
+    ];
+
+    if (window.location.protocol === "https:") {
+      cookieParts.push("Secure");
+    }
+
+    document.cookie = cookieParts.join("; ");
   }, [catIndex, tierKey, addOns, aiFormData]);
 
   useEffect(() => {

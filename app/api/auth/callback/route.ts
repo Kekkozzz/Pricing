@@ -5,7 +5,18 @@ import { cookies } from "next/headers";
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-  const next = requestUrl.searchParams.get("next") ?? "/dashboard";
+  const cookieStore = await cookies();
+  const cookieNextRaw = cookieStore.get("auth_next")?.value;
+
+  let next = requestUrl.searchParams.get("next") ?? "/dashboard";
+  if (!requestUrl.searchParams.get("next") && cookieNextRaw) {
+    try {
+      next = decodeURIComponent(cookieNextRaw);
+    } catch {
+      next = cookieNextRaw;
+    }
+  }
+
   const safeNext = next.startsWith("/") ? next : "/dashboard";
 
   // Build base URL: prefer forwarded headers (Vercel/reverse proxy), fallback to origin
@@ -16,10 +27,13 @@ export async function GET(request: Request) {
     : requestUrl.origin;
 
   if (!code) {
-    return NextResponse.redirect(`${baseUrl}/login?error=auth&reason=missing_code`);
+    const response = NextResponse.redirect(
+      `${baseUrl}/login?error=auth&reason=missing_code`
+    );
+    response.cookies.set("auth_next", "", { path: "/", maxAge: 0 });
+    return response;
   }
 
-  const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -44,7 +58,9 @@ export async function GET(request: Request) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (!error) {
-    return NextResponse.redirect(`${baseUrl}${safeNext}`);
+    const response = NextResponse.redirect(`${baseUrl}${safeNext}`);
+    response.cookies.set("auth_next", "", { path: "/", maxAge: 0 });
+    return response;
   }
 
   console.error("Auth callback exchange failed", {
@@ -53,7 +69,9 @@ export async function GET(request: Request) {
     status: "status" in error ? error.status : undefined,
   });
 
-  return NextResponse.redirect(
+  const response = NextResponse.redirect(
     `${baseUrl}/login?error=auth&reason=${encodeURIComponent(error.message)}`
   );
+  response.cookies.set("auth_next", "", { path: "/", maxAge: 0 });
+  return response;
 }

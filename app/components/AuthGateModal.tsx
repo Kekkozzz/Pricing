@@ -24,6 +24,8 @@ export default function AuthGateModal({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
 
   const supabase = createClient();
 
@@ -97,11 +99,61 @@ export default function AuthGateModal({
     });
   };
 
+  const handleVerifyAndContinue = async () => {
+    setVerificationError(null);
+    setVerificationLoading(true);
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        onAuthenticated();
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        const lowerMsg = error.message.toLowerCase();
+        if (lowerMsg.includes("email") && lowerMsg.includes("confirm")) {
+          setVerificationError(
+            "La verifica non risulta ancora completata. Dopo aver cliccato il link nella mail, premi di nuovo qui."
+          );
+          return;
+        }
+
+        setVerificationError(
+          error.message === "Invalid login credentials"
+            ? "Verifica completata, ma non riesco ad accedere automaticamente. Controlla password e riprova."
+            : error.message
+        );
+        return;
+      }
+
+      onAuthenticated();
+    } finally {
+      setVerificationLoading(false);
+    }
+  };
+
   // Post-registration: email confirmation message
   if (emailSent) {
     return createPortal(
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
         <div className="relative w-full max-w-sm mx-4 border border-border bg-background p-8 animate-fade-up">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-muted hover:text-foreground transition-colors"
+            aria-label="Chiudi"
+          >
+            <X size={16} />
+          </button>
+
           <div className="text-center">
             <div className="w-14 h-14 mx-auto mb-5 border border-accent/30 flex items-center justify-center">
               <svg
@@ -126,9 +178,27 @@ export default function AuthGateModal({
               <span className="text-foreground">{email}</span>
             </p>
             <p className="text-xs text-muted mb-6">
-              Dopo la conferma, tornerai qui e la generazione
-              partir&agrave; in automatico. I tuoi dati sono salvati.
+              Dopo aver cliccato il link nella mail, torna qui e premi
+              il pulsante per continuare. I tuoi dati restano salvati.
             </p>
+
+            {verificationError && (
+              <div className="mb-4 p-2.5 bg-red-500/10 border border-red-500/20 text-red-400 text-xs text-left">
+                {verificationError}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={handleVerifyAndContinue}
+              disabled={verificationLoading}
+              className="w-full mb-4 py-2.5 bg-accent text-background text-xs font-medium uppercase tracking-widest hover:bg-accent/90 transition-colors disabled:opacity-50"
+            >
+              {verificationLoading
+                ? "Controllo verifica..."
+                : "Ho verificato, continua"}
+            </button>
+
             <div className="flex items-center gap-3 justify-center text-[10px] text-accent">
               <span className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 bg-accent rounded-full" />
