@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { createClient } from "@/app/lib/supabase/client";
 import { X } from "lucide-react";
 
@@ -70,7 +71,7 @@ export default function AuthGateModal({
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent("/?restore=wizard")}`,
+        emailRedirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent("/?restore=wizard#pricing")}`,
       },
     });
 
@@ -91,16 +92,16 @@ export default function AuthGateModal({
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent("/?restore=wizard")}`,
+        redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent("/?restore=wizard#pricing")}`,
       },
     });
   };
 
   // Post-registration: email confirmation message
   if (emailSent) {
-    return (
-      <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-        <div className="w-full max-w-sm mx-4 border border-border bg-background p-8 animate-fade-up">
+    return createPortal(
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <div className="relative w-full max-w-sm mx-4 border border-border bg-background p-8 animate-fade-up">
           <div className="text-center">
             <div className="w-14 h-14 mx-auto mb-5 border border-accent/30 flex items-center justify-center">
               <svg
@@ -140,13 +141,14 @@ export default function AuthGateModal({
             </div>
           </div>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
-  return (
-    <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-      <div className="w-full max-w-sm mx-4 border border-border bg-background p-8 animate-fade-up">
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+      <div className="relative w-full max-w-sm mx-4 border border-border bg-background p-8 animate-fade-up">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -338,6 +340,7 @@ export default function AuthGateModal({
           )}
         </p>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
