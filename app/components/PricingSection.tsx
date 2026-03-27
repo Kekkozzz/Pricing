@@ -18,7 +18,7 @@ import WizardScene from "./WizardScene";
 import AIPreviewStep from "./AIPreviewStep";
 import type { AIFormData } from "./AIPreviewStep";
 import AuthGateModal from "./AuthGateModal";
-import { createQuote } from "@/app/actions/quotes";
+import { createQuote, completeDraftQuote } from "@/app/actions/quotes";
 import { createClient } from "@/app/lib/supabase/client";
 
 function easeInOutCubic(t: number) {
@@ -99,6 +99,9 @@ export default function PricingSection() {
   const [aiState, setAiState] = useState({ canGenerate: false, isGenerating: false, isComplete: false });
   const [generateTrigger, setGenerateTrigger] = useState(0);
   const [aiFormData, setAiFormData] = useState<AIFormData | null>(restoredState?.aiFormData ?? null);
+
+  // Draft quote state
+  const [draftQuoteId, setDraftQuoteId] = useState<string | null>(null);
 
   // Auth state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -290,30 +293,43 @@ export default function PricingSection() {
       .map((f) => f.name);
 
     try {
-      const result = await createQuote({
-        serviceId: cat.id,
-        serviceName: cat.name,
-        tierKey,
-        tierName: tier.name,
-        tierPrice: tier.priceNumeric,
-        addOns: selectedAddOns.map((a) => ({
-          name: a.name,
-          price: a.price,
-          priceNumeric: a.priceNumeric,
-          recurring: a.recurring,
-        })),
-        features: featureNames,
-        businessName: aiFormData?.businessName,
-        sector: aiFormData?.sector,
-        style: aiFormData?.style,
-        colorPalette: aiFormData?.colors,
-        description: aiFormData?.description,
-        referenceUrls: aiFormData?.referenceUrls,
-        contactName: formData.name,
-        contactEmail: formData.email,
-        contactPhone: formData.phone,
-        contactMessage: formData.message,
-      });
+      let result: { success: boolean; error?: string };
+
+      if (draftQuoteId) {
+        // Update existing draft quote with contact data
+        result = await completeDraftQuote(draftQuoteId, {
+          contactName: formData.name,
+          contactEmail: formData.email,
+          contactPhone: formData.phone,
+          contactMessage: formData.message,
+        });
+      } else {
+        // Fallback: create full quote (no draft exists)
+        result = await createQuote({
+          serviceId: cat.id,
+          serviceName: cat.name,
+          tierKey,
+          tierName: tier.name,
+          tierPrice: tier.priceNumeric,
+          addOns: selectedAddOns.map((a) => ({
+            name: a.name,
+            price: a.price,
+            priceNumeric: a.priceNumeric,
+            recurring: a.recurring,
+          })),
+          features: featureNames,
+          businessName: aiFormData?.businessName,
+          sector: aiFormData?.sector,
+          style: aiFormData?.style,
+          colorPalette: aiFormData?.colors,
+          description: aiFormData?.description,
+          referenceUrls: aiFormData?.referenceUrls,
+          contactName: formData.name,
+          contactEmail: formData.email,
+          contactPhone: formData.phone,
+          contactMessage: formData.message,
+        });
+      }
 
       setFormStatus(result.success ? "sent" : "error");
     } catch {
@@ -628,12 +644,18 @@ export default function PricingSection() {
         serviceName={cat.name}
         serviceId={cat.id}
         tierName={tier.name}
+        tierKey={tierKey}
+        tierPrice={tier.priceNumeric}
         features={featureNames}
         addOns={addOnNames}
+        addOnsData={cat.addOns
+          .filter((a) => addOns.includes(a.name))
+          .map((a) => ({ name: a.name, price: a.price, priceNumeric: a.priceNumeric, recurring: a.recurring }))}
         initialData={aiFormData}
         onProceed={() => goToStep(step + 1)}
         onStateChange={setAiState}
         onFormDataChange={setAiFormData}
+        onDraftCreated={setDraftQuoteId}
         triggerGenerate={generateTrigger}
       />
     );

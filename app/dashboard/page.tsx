@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { QuoteStatus } from "@/app/lib/supabase/types";
 
 const statusLabels: Record<QuoteStatus, string> = {
+  draft: "Lead",
   new: "Nuovo",
   contacted: "Contattato",
   in_progress: "In lavorazione",
@@ -13,6 +14,7 @@ const statusLabels: Record<QuoteStatus, string> = {
 };
 
 const statusColors: Record<QuoteStatus, string> = {
+  draft: "bg-orange-500/20 text-orange-400",
   new: "bg-blue-500/20 text-blue-400",
   contacted: "bg-yellow-500/20 text-yellow-400",
   in_progress: "bg-purple-500/20 text-purple-400",
@@ -30,12 +32,12 @@ export default async function DashboardPage() {
 
   if (!user) return null;
 
-  const { data: quotes } = await supabase
+  const { data: allQuotes } = await supabase
     .from("quotes")
     .select("*")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(50);
 
   const { data: previews } = await supabase
     .from("previews")
@@ -43,6 +45,16 @@ export default async function DashboardPage() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(6);
+
+  // Fetch profile for draft lead contact info
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", user.id)
+    .single();
+
+  const draftQuotes = allQuotes?.filter((q) => q.status === "draft") ?? [];
+  const quotes = allQuotes?.filter((q) => q.status !== "draft") ?? [];
 
   return (
     <>
@@ -59,19 +71,19 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
         <div className="border border-border p-6">
           <p className="font-display text-2xl text-accent">
-            {quotes?.length ?? 0}
+            {quotes.length}
           </p>
-          <p className="text-xs text-muted mt-1">Preventivi totali</p>
+          <p className="text-xs text-muted mt-1">Preventivi</p>
+        </div>
+        <div className="border border-border p-6">
+          <p className="font-display text-2xl text-orange-400">
+            {draftQuotes.length}
+          </p>
+          <p className="text-xs text-muted mt-1">Lead in attesa</p>
         </div>
         <div className="border border-border p-6">
           <p className="font-display text-2xl text-accent">
-            {quotes?.filter((q) => q.status === "new").length ?? 0}
-          </p>
-          <p className="text-xs text-muted mt-1">In attesa</p>
-        </div>
-        <div className="border border-border p-6">
-          <p className="font-display text-2xl text-accent">
-            {quotes?.filter((q) => q.status === "accepted").length ?? 0}
+            {quotes.filter((q) => q.status === "accepted").length}
           </p>
           <p className="text-xs text-muted mt-1">Accettati</p>
         </div>
@@ -83,10 +95,53 @@ export default async function DashboardPage() {
         </div>
       </div>
 
+      {/* Draft leads section */}
+      {draftQuotes.length > 0 && (
+        <div className="mb-12">
+          <h2 className="font-display text-xl mb-6">Lead in attesa</h2>
+          <div className="flex flex-col gap-2">
+            {draftQuotes.map((draft) => (
+              <Link
+                key={draft.id}
+                href={`/dashboard/quotes/${draft.id}`}
+                className="group flex items-center justify-between p-6 border border-orange-500/20 hover:border-orange-500/40 transition-all duration-300"
+              >
+                <div className="flex items-center gap-6">
+                  <div>
+                    <p className="text-sm font-medium group-hover:text-orange-400 transition-colors">
+                      {draft.business_name || draft.service_name} — {draft.tier_name}
+                    </p>
+                    <p className="text-xs text-muted mt-1">
+                      {profile?.full_name || user.email}
+                      {" · "}
+                      {new Date(draft.created_at).toLocaleDateString("it-IT", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-[10px] uppercase tracking-widest px-3 py-1 bg-orange-500/20 text-orange-400">
+                    In attesa di contatto
+                  </span>
+                  <p className="font-display text-lg text-accent">
+                    {draft.tier_price > 0
+                      ? `€${draft.tier_price.toLocaleString("it-IT")}`
+                      : "Su preventivo"}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Quotes list */}
       <div className="mb-12">
         <h2 className="font-display text-xl mb-6">Preventivi recenti</h2>
-        {!quotes || quotes.length === 0 ? (
+        {quotes.length === 0 ? (
           <div className="border border-border p-12 text-center">
             <p className="text-muted text-sm mb-4">
               Non hai ancora nessun preventivo

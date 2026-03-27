@@ -10,6 +10,7 @@ export type Json =
   | Json[];
 
 export type QuoteStatus =
+  | "draft"
   | "new"
   | "contacted"
   | "in_progress"
@@ -107,6 +108,25 @@ export interface Database {
         Update: {
           status?: QuoteStatus;
           user_id?: string | null;
+          service_id?: string;
+          service_name?: string;
+          tier_key?: string;
+          tier_name?: string;
+          tier_price?: number;
+          add_ons?: Json;
+          features?: Json;
+          business_name?: string | null;
+          sector?: string | null;
+          style?: string | null;
+          color_palette?: string[];
+          description?: string | null;
+          reference_urls?: string | null;
+          contact_name?: string | null;
+          contact_email?: string | null;
+          contact_phone?: string | null;
+          contact_message?: string | null;
+          total_one_time?: number;
+          total_monthly?: number;
           updated_at?: string;
         };
         Relationships: [];

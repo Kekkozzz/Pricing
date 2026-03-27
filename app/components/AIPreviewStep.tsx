@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Upload, X, Maximize2, Minimize2, RotateCcw, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import PreviewLoading from "./PreviewLoading";
+import { createDraftQuote } from "@/app/actions/quotes";
 
 const SECTORS = [
   "Ristorazione",
@@ -31,12 +32,16 @@ type AIPreviewStepProps = {
   serviceName: string;
   serviceId: string;
   tierName: string;
+  tierKey: string;
+  tierPrice: number;
   features: string[];
   addOns: string[];
+  addOnsData: { name: string; price: string; priceNumeric: number; recurring: boolean }[];
   initialData?: AIFormData | null;
   onProceed: () => void;
   onStateChange?: (state: { canGenerate: boolean; isGenerating: boolean; isComplete: boolean }) => void;
   onFormDataChange?: (data: AIFormData) => void;
+  onDraftCreated?: (quoteId: string) => void;
   triggerGenerate?: number;
 };
 
@@ -52,12 +57,16 @@ export default function AIPreviewStep({
   serviceName,
   serviceId,
   tierName,
+  tierKey,
+  tierPrice,
   features,
   addOns,
+  addOnsData,
   initialData,
   onProceed,
   onStateChange,
   onFormDataChange,
+  onDraftCreated,
   triggerGenerate,
 }: AIPreviewStepProps) {
   const initialSectorState = deriveInitialSectorState(initialData?.sector);
@@ -197,6 +206,30 @@ export default function AIPreviewStep({
       setImageBase64(img);
       if (pId) setPreviewId(pId);
       setState("complete");
+
+      // Create draft quote and link preview
+      try {
+        const draftResult = await createDraftQuote({
+          serviceId,
+          serviceName,
+          tierKey,
+          tierName,
+          tierPrice,
+          addOns: addOnsData,
+          features,
+          businessName: businessName.trim(),
+          sector: effectiveSector.trim(),
+          style,
+          colorPalette: selectedColors,
+          description: description.trim(),
+          referenceUrls: referenceUrls.trim() || undefined,
+        }, pId || undefined);
+        if (draftResult.success) {
+          onDraftCreated?.(draftResult.quoteId);
+        }
+      } catch (draftErr) {
+        console.error("Draft quote creation failed (non-fatal):", draftErr);
+      }
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
         setErrorMsg("La richiesta ha impiegato troppo tempo. Verifica la connessione e riprova.");

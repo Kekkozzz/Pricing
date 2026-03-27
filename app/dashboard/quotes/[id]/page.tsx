@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { QuoteStatus } from "@/app/lib/supabase/types";
 
 const statusLabels: Record<QuoteStatus, string> = {
+  draft: "Lead",
   new: "Nuovo",
   contacted: "Contattato",
   in_progress: "In lavorazione",
@@ -14,6 +15,7 @@ const statusLabels: Record<QuoteStatus, string> = {
 };
 
 const statusColors: Record<QuoteStatus, string> = {
+  draft: "bg-orange-500/20 text-orange-400 border-orange-500/30",
   new: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   contacted: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
   in_progress: "bg-purple-500/20 text-purple-400 border-purple-500/30",
@@ -24,6 +26,7 @@ const statusColors: Record<QuoteStatus, string> = {
 };
 
 const statusTimeline: QuoteStatus[] = [
+  "draft",
   "new",
   "contacted",
   "in_progress",
@@ -71,6 +74,14 @@ export default async function QuoteDetailPage({ params }: Props) {
     })
   );
 
+  // Fetch profile for draft contact info
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", user.id)
+    .single();
+
+  const isDraft = quote.status === "draft";
   const addOns = (quote.add_ons as { name: string; price: string }[]) ?? [];
   const features = (quote.features as string[]) ?? [];
   const currentStatusIndex = statusTimeline.indexOf(
@@ -249,6 +260,59 @@ export default async function QuoteDetailPage({ params }: Props) {
             </div>
           </div>
         )}
+
+        {/* Contact info / Draft lead info */}
+        <div className="border border-border p-6">
+          <h2 className="text-xs uppercase tracking-widest text-muted mb-4">
+            {isDraft ? "Contatto lead" : "Contatto"}
+          </h2>
+          <div className="space-y-3">
+            {isDraft && !quote.contact_name ? (
+              <>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted">Nome</span>
+                  <span>{profile?.full_name || "—"}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted">Email</span>
+                  <span>{user.email}</span>
+                </div>
+                <div className="pt-3 border-t border-border/30">
+                  <p className="text-[10px] uppercase tracking-wider text-orange-400">
+                    Il cliente non ha ancora completato il form di contatto
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                {quote.contact_name && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted">Nome</span>
+                    <span>{quote.contact_name}</span>
+                  </div>
+                )}
+                {quote.contact_email && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted">Email</span>
+                    <span>{quote.contact_email}</span>
+                  </div>
+                )}
+                {quote.contact_phone && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted">Telefono</span>
+                    <span>{quote.contact_phone}</span>
+                  </div>
+                )}
+                {quote.contact_message && (
+                  <div className="pt-3 border-t border-border/30">
+                    <p className="text-xs text-muted mb-1">Messaggio</p>
+                    <p className="text-sm">{quote.contact_message}</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Previews */}
