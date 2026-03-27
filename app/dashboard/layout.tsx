@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/app/lib/supabase/server";
 import Link from "next/link";
+import LogoutButton from "./LogoutButton";
 
 export default async function DashboardLayout({
   children,
@@ -50,6 +51,7 @@ export default async function DashboardLayout({
             <span className="text-xs text-accent">
               {profile?.full_name || user.email}
             </span>
+            <LogoutButton />
           </div>
         </div>
       </nav>

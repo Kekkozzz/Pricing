@@ -269,6 +269,21 @@ export async function completeDraftQuote(
 }
 
 export async function updateQuoteStatus(id: string, status: QuoteStatus) {
+  // Admin-only: verify caller is admin
+  const anonClient = await createServerClient();
+  const { data: { user } } = await anonClient.auth.getUser();
+  if (!user) return { success: false, error: "Non autenticato" };
+
+  const { data: profile } = await anonClient
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || profile.role !== "admin") {
+    return { success: false, error: "Non autorizzato" };
+  }
+
   const supabase = await createServiceRoleClient();
 
   const { error } = await supabase

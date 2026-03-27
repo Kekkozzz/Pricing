@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/app/lib/supabase/client";
-import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const [fullName, setFullName] = useState("");
@@ -20,7 +19,6 @@ export default function ProfilePage() {
   const [passwordMsg, setPasswordMsg] = useState<string | null>(null);
 
   const supabase = createClient();
-  const router = useRouter();
 
   useEffect(() => {
     async function load() {
@@ -108,12 +106,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
-  };
-
   return (
     <>
       <div className="mb-10">
@@ -125,7 +117,7 @@ export default function ProfilePage() {
         </h1>
       </div>
 
-      <div className="max-w-xl space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Profile form */}
         <div className="border border-border p-8">
           <h2 className="text-xs uppercase tracking-widest text-muted mb-6">
@@ -201,7 +193,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Password change */}
-        <div className="border border-border p-8">
+        <div className="border border-border p-8 h-fit">
           <h2 className="text-xs uppercase tracking-widest text-muted mb-6">
             Cambia password
           </h2>
@@ -256,14 +248,6 @@ export default function ProfilePage() {
             </button>
           </form>
         </div>
-
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          className="text-sm text-muted hover:text-red-400 transition-colors uppercase tracking-widest"
-        >
-          Disconnetti
-        </button>
       </div>
     </>
   );

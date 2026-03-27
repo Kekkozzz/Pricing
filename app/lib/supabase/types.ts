@@ -28,6 +28,7 @@ export interface Database {
           full_name: string | null;
           phone: string | null;
           company_name: string | null;
+          role: "user" | "admin";
           created_at: string;
           updated_at: string;
         };
@@ -36,6 +37,7 @@ export interface Database {
           full_name?: string | null;
           phone?: string | null;
           company_name?: string | null;
+          role?: "user" | "admin";
           created_at?: string;
           updated_at?: string;
         };
@@ -44,6 +46,7 @@ export interface Database {
           full_name?: string | null;
           phone?: string | null;
           company_name?: string | null;
+          role?: "user" | "admin";
           updated_at?: string;
         };
         Relationships: [];
