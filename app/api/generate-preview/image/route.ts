@@ -1,5 +1,4 @@
 import { type NextRequest } from "next/server";
-import { cookies } from "next/headers";
 import {
   generateImage,
   GeminiConfigError,
@@ -8,47 +7,31 @@ import {
   GeminiNoImageError,
 } from "@/app/lib/gemini";
 import { buildImagePrompt, type PreviewInput } from "@/app/data/preview-prompts";
+import { checkRateLimit } from "@/app/actions/rate-limit";
+import { savePreview } from "@/app/actions/previews";
 
 export const maxDuration = 180;
 
-// In-memory rate limit store (per-instance; sufficient for single-server deploy)
-const ipCounts = new Map<string, { count: number; resetAt: number }>();
-
-function checkIPLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = ipCounts.get(ip);
-  if (!entry || now > entry.resetAt) {
-    ipCounts.set(ip, { count: 1, resetAt: now + 3600_000 });
-    return true;
-  }
-  if (entry.count >= 10) return false;
-  entry.count++;
-  return true;
-}
-
-function checkSessionLimit(sessionCount: number): boolean {
-  return sessionCount < 3;
-}
-
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting — IP
+    // Rate limiting — IP (persistent via Supabase)
     const ip =
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
       "unknown";
-    if (!checkIPLimit(ip)) {
+
+    const ipCheck = await checkRateLimit(`ip:${ip}`, "preview_generate", 10);
+    if (!ipCheck.allowed) {
       return Response.json(
         { error: "Hai raggiunto il limite di preview. Contattaci per vedere di più!" },
         { status: 429 }
       );
     }
 
-    // Rate limiting — Session cookie
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get("preview_count");
-    const sessionCount = sessionCookie ? parseInt(sessionCookie.value, 10) : 0;
-
-    if (!checkSessionLimit(sessionCount)) {
+    // Rate limiting — Session (persistent via Supabase, keyed by IP + UA hash)
+    const ua = request.headers.get("user-agent") ?? "";
+    const sessionKey = `session:${ip}:${ua.slice(0, 50)}`;
+    const sessionCheck = await checkRateLimit(sessionKey, "preview_session", 3);
+    if (!sessionCheck.allowed) {
       return Response.json(
         { error: "Hai raggiunto il limite di preview per questa sessione." },
         { status: 429 }
@@ -84,14 +67,24 @@ export async function POST(request: NextRequest) {
     const prompt = buildImagePrompt(input);
     const imageBase64 = await generateImage(prompt);
 
-    // Update session cookie
-    const response = Response.json({ imageBase64 });
-    response.headers.set(
-      "Set-Cookie",
-      `preview_count=${sessionCount + 1}; Path=/; Max-Age=86400; SameSite=Strict`
-    );
+    // Persist image to Supabase Storage (non-blocking for response)
+    let previewId: string | undefined;
+    let signedUrl: string | undefined;
+    try {
+      const result = await savePreview(imageBase64, input as Record<string, unknown>);
+      if (result.success) {
+        previewId = result.previewId;
+        signedUrl = result.signedUrl;
+      }
+    } catch (storageErr) {
+      console.error("Storage save failed (non-fatal):", storageErr);
+    }
 
-    return response;
+    return Response.json({
+      imageBase64,
+      previewId,
+      imageUrl: signedUrl,
+    });
   } catch (err) {
     console.error("Image generation error:", err);
 

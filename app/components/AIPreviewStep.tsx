@@ -73,6 +73,7 @@ export default function AIPreviewStep({
 
   const [state, setState] = useState<GenerationState>("idle");
   const [imageBase64, setImageBase64] = useState<string | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -192,8 +193,9 @@ export default function AIPreviewStep({
         throw new Error(data.error || "Errore generazione immagine");
       }
 
-      const { imageBase64: img } = await imgRes.json();
+      const { imageBase64: img, previewId: pId } = await imgRes.json();
       setImageBase64(img);
+      if (pId) setPreviewId(pId);
       setState("complete");
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
@@ -236,10 +238,20 @@ export default function AIPreviewStep({
   }, [businessName, effectiveSector, style, selectedColors, description, referenceUrls, onFormDataChange]);
 
   // Parent triggers generation via incrementing triggerGenerate
+  const prevTriggerRef = useRef(triggerGenerate);
   useEffect(() => {
-    if (triggerGenerate && triggerGenerate > 0 && canGenerate && !isGenerating) {
+    // Only trigger if the value actually changed (not on remount with stale value)
+    if (
+      triggerGenerate &&
+      triggerGenerate > 0 &&
+      triggerGenerate !== prevTriggerRef.current &&
+      canGenerate &&
+      !isGenerating &&
+      state !== "complete"
+    ) {
       handleGenerate();
     }
+    prevTriggerRef.current = triggerGenerate;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [triggerGenerate]);
 

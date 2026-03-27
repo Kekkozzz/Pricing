@@ -4,16 +4,30 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { siteConfig } from "../data/config";
+import { createClient } from "@/app/lib/supabase/client";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const floatingRef = useRef<HTMLDivElement>(null);
   const isContracted = useRef(false);
   const isNavigating = useRef(false);
   const activeTween = useRef<gsap.core.Tween | null>(null);
+
+  // Check auth state
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const links = [
     { label: "Servizi", href: "#servizi" },
@@ -21,9 +35,20 @@ export default function Navbar() {
     { label: "Contatti", href: "#contatti" },
   ];
 
-  const handleNavClick = useCallback(() => {
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
     setMenuOpen(false);
     isNavigating.current = true;
+
+    const href = e.currentTarget.getAttribute("href");
+    if (href && href !== "#") {
+      const target = document.querySelector(href);
+      if (target) {
+        const offset = 0;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    }
 
     const onScrollEnd = () => {
       isNavigating.current = false;
@@ -301,6 +326,12 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
+            <a
+              href={isLoggedIn ? "/dashboard" : "/login"}
+              className="text-xs uppercase tracking-[0.2em] text-accent hover:text-foreground transition-colors duration-300"
+            >
+              {isLoggedIn ? "Dashboard" : "Accedi"}
+            </a>
           </div>
 
           {/* Mobile hamburger */}
@@ -340,6 +371,12 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
+            <a
+              href={isLoggedIn ? "/dashboard" : "/login"}
+              className="text-xs uppercase tracking-[0.2em] text-accent hover:text-foreground transition-colors"
+            >
+              {isLoggedIn ? "Dashboard" : "Accedi"}
+            </a>
           </div>
         </div>
       </nav>
