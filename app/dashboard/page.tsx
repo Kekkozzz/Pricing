@@ -46,14 +46,6 @@ export default async function DashboardPage() {
     .order("created_at", { ascending: false })
     .limit(6);
 
-  // Fetch profile for draft lead contact info
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name")
-    .eq("id", user.id)
-    .single();
-
-  const draftQuotes = allQuotes?.filter((q) => q.status === "draft") ?? [];
   const quotes = allQuotes?.filter((q) => q.status !== "draft") ?? [];
 
   return (
@@ -68,18 +60,12 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-12">
         <div className="border border-border p-6">
           <p className="font-display text-2xl text-accent">
             {quotes.length}
           </p>
           <p className="text-xs text-muted mt-1">Preventivi</p>
-        </div>
-        <div className="border border-border p-6">
-          <p className="font-display text-2xl text-orange-400">
-            {draftQuotes.length}
-          </p>
-          <p className="text-xs text-muted mt-1">Lead in attesa</p>
         </div>
         <div className="border border-border p-6">
           <p className="font-display text-2xl text-accent">
@@ -94,49 +80,6 @@ export default async function DashboardPage() {
           <p className="text-xs text-muted mt-1">Preview generate</p>
         </div>
       </div>
-
-      {/* Draft leads section */}
-      {draftQuotes.length > 0 && (
-        <div className="mb-12">
-          <h2 className="font-display text-xl mb-6">Lead in attesa</h2>
-          <div className="flex flex-col gap-2">
-            {draftQuotes.map((draft) => (
-              <Link
-                key={draft.id}
-                href={`/dashboard/quotes/${draft.id}`}
-                className="group flex items-center justify-between p-6 border border-orange-500/20 hover:border-orange-500/40 transition-all duration-300"
-              >
-                <div className="flex items-center gap-6">
-                  <div>
-                    <p className="text-sm font-medium group-hover:text-orange-400 transition-colors">
-                      {draft.business_name || draft.service_name} — {draft.tier_name}
-                    </p>
-                    <p className="text-xs text-muted mt-1">
-                      {profile?.full_name || user.email}
-                      {" · "}
-                      {new Date(draft.created_at).toLocaleDateString("it-IT", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-[10px] uppercase tracking-widest px-3 py-1 bg-orange-500/20 text-orange-400">
-                    In attesa di contatto
-                  </span>
-                  <p className="font-display text-lg text-accent">
-                    {draft.tier_price > 0
-                      ? `€${draft.tier_price.toLocaleString("it-IT")}`
-                      : "Su preventivo"}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Quotes list */}
       <div className="mb-12">
