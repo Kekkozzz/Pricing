@@ -59,9 +59,6 @@ export default async function AdminLayout({
             >
               Dashboard Utente
             </Link>
-            <span className="text-xs text-accent">
-              {profile?.full_name || user.email}
-            </span>
             <LogoutButton />
           </div>
         </div>
