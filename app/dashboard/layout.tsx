@@ -19,7 +19,7 @@ export default async function DashboardLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("full_name, role")
     .eq("id", user.id)
     .single();
 
@@ -48,9 +48,14 @@ export default async function DashboardLayout({
             >
               Profilo
             </Link>
-            <span className="text-xs text-accent">
-              {profile?.full_name || user.email}
-            </span>
+            {profile?.role === "admin" && (
+              <Link
+                href="/admin"
+                className="text-xs uppercase tracking-[0.2em] text-accent hover:text-foreground transition-colors duration-300"
+              >
+                Admin
+              </Link>
+            )}
             <LogoutButton />
           </div>
         </div>
