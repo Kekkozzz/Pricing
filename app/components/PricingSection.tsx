@@ -100,6 +100,8 @@ export default function PricingSection() {
   const [aiState, setAiState] = useState({ canGenerate: false, isGenerating: false, isComplete: false });
   const [generateTrigger, setGenerateTrigger] = useState(0);
   const [aiFormData, setAiFormData] = useState<AIFormData | null>(restoredState?.aiFormData ?? null);
+  const [aiImageBase64, setAiImageBase64] = useState<string | null>(null);
+  const [aiPreviewId, setAiPreviewId] = useState<string | null>(null);
 
   // Draft quote state
   const [draftQuoteId, setDraftQuoteId] = useState<string | null>(null);
@@ -189,6 +191,33 @@ export default function PricingSection() {
       window.removeEventListener("service-selected", handler);
       if (timeoutId) clearTimeout(timeoutId);
     };
+  }, []);
+
+  // Query param deep-linking: ?service=<id>&tier=<base|pro|premium>
+  // Only runs when there is no wizard state restoration (restore=wizard takes priority)
+  useEffect(() => {
+    if (restoredState) return;
+    const params = new URLSearchParams(window.location.search);
+    const serviceParam = params.get("service");
+    const tierParam = params.get("tier");
+    if (serviceParam) {
+      const idx = categories.findIndex((c) => c.id === serviceParam);
+      if (idx !== -1) {
+        setCatIndex(idx);
+        if (tierParam && ["base", "pro", "premium"].includes(tierParam)) {
+          setTierKey(tierParam as TierKey);
+          setStep(3);
+        } else {
+          setStep(2);
+        }
+        window.history.replaceState(
+          {},
+          "",
+          window.location.pathname + window.location.hash
+        );
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const cat: ServiceCategory | null =
@@ -667,6 +696,10 @@ export default function PricingSection() {
           .filter((a) => addOns.includes(a.name))
           .map((a) => ({ name: a.name, price: a.price, priceNumeric: a.priceNumeric, recurring: a.recurring }))}
         initialData={aiFormData}
+        persistedImage={aiImageBase64}
+        persistedPreviewId={aiPreviewId}
+        onImageChange={setAiImageBase64}
+        onPreviewIdChange={setAiPreviewId}
         onProceed={() => goToStep(step + 1)}
         onStateChange={setAiState}
         onFormDataChange={setAiFormData}
