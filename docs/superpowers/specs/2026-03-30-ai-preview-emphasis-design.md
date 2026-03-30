@@ -11,8 +11,9 @@ Comunicare la feature "Preview AI" come differenziatore esclusivo su tutti i tou
 Aggiungere un badge/pill sotto il sottotitolo, prima dei CTA:
 
 - Testo: `Preview AI inclusa — vedi il tuo progetto prima di iniziare`
-- Stile: `text-[10px] uppercase tracking-[0.2em] text-accent font-mono`, con un marker `✦`
+- Stile: `text-[10px] uppercase tracking-[0.35em] text-accent font-mono`, con un marker `✦` (tracking coerente con il tagline hero soprastante)
 - Posizione: tra il paragrafo e i bottoni CTA
+- Animazione: `animate-fade-up stagger-4` (i CTA diventano stagger-5)
 
 ### 1b. Card Servizi (`app/components/ServicesOverview.tsx`)
 
@@ -26,7 +27,7 @@ In ogni ServiceCard, sotto la riga "da €X", aggiungere:
 
 Appendere `· Preview AI inclusa` al campo `priceLabel` di ogni servizio:
 
-- Siti Web: "Da €499 · Consegna da 3 giorni · Prezzo trasparente, senza sorprese · Preview AI inclusa"
+- Siti Web: "Da €499 · Consegna da 3 giorni · Preview AI inclusa" (rimosso "Prezzo trasparente, senza sorprese" per uniformare a 3 segmenti)
 - Shop & SaaS: "Da €999 · Consegna da 5 giorni · Preview AI inclusa"
 - Web App: "Da €2.999 · Consegna da 7 giorni · Preview AI inclusa"
 - Mobile App: "Da €3.999 · Consegna da 10 giorni · Preview AI inclusa"
@@ -48,14 +49,21 @@ Layout due colonne su desktop (`md:grid-cols-2`), stack su mobile.
 - CTA: `Prova ora →` — link ad `#pricing`, stile primary button (bg-foreground)
 
 **Colonna destra — Mockup:**
-- Immagine statica di un mockup generato (file in `public/ai-showcase.png`)
-- Racchiusa in un frame browser stilizzato (barra grigia con 3 pallini + URL finto)
+- Immagine statica di un mockup generato (file in `public/ai-showcase.png`), alt: "Preview AI generata per un sito di esempio"
+- Racchiusa in un frame browser stilizzato:
+  - Barra: `bg-surface/40 border-b border-border rounded-t px-4 py-2.5` con 3 pallini (`bg-muted/30 w-2.5 h-2.5 rounded-full`) e testo URL `tuosito.it` in `text-[10px] text-muted font-mono`
+  - Contenuto: `rounded-b border border-border overflow-hidden`
 - Badge sopra il frame: `Generato in 30 secondi` — accent, mono, piccolo
-- Hover: leggero scale(1.02) + ombra
+- Hover: `hover:scale-[1.02] transition-transform duration-500 hover:shadow-[0_8px_30px_rgba(201,185,154,0.08)]`
+- Se `ai-showcase.png` non esiste, il componente non renderizza nulla (conditional render con check import)
 
 **Mobile:** Stack verticale, copy sopra, mockup sotto full-width.
 
 **Design system:** background `#050505`, accent `#c9b99a`, font display Instrument Serif, mono Geist Mono. Divider line in basso come le altre sezioni.
+
+**Componente:** Server Component (nessun state o interattività JS — solo CSS hover). No `"use client"`.
+
+**Animazioni:** `animate-fade-up` con stagger su label, headline, paragrafo, CTA e frame mockup.
 
 ## 3. FAQ Pagine Servizio
 
