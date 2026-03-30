@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { siteConfig } from "../data/config";
@@ -11,11 +12,22 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [serviziOpen, setServiziOpen] = useState(false);
+  const [serviziMobileOpen, setServiziMobileOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const floatingRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const isContracted = useRef(false);
   const isNavigating = useRef(false);
   const activeTween = useRef<gsap.core.Tween | null>(null);
+  const pathname = usePathname();
+
+  const serviziLinks = [
+    { label: "Siti Web", href: "/servizi/siti-web" },
+    { label: "Shop & SaaS", href: "/servizi/shop-saas" },
+    { label: "Web App", href: "/servizi/web-app" },
+    { label: "Mobile App", href: "/servizi/mobile-app" },
+  ];
 
   // Check auth state
   useEffect(() => {
@@ -30,22 +42,30 @@ export default function Navbar() {
   }, []);
 
   const links = [
-    { label: "Servizi", href: "#servizi" },
+    { label: "Servizi", href: "#servizi", hasDropdown: true },
     { label: "Pricing", href: "#pricing" },
     { label: "Contatti", href: "#contatti" },
   ];
 
   const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    const href = e.currentTarget.getAttribute("href");
+
+    // Real page navigation — let the browser handle it
+    if (href && href.startsWith("/")) {
+      setMenuOpen(false);
+      return;
+    }
+
+    // Hash anchor — smooth scroll
     e.preventDefault();
     setMenuOpen(false);
+    setServiziMobileOpen(false);
     isNavigating.current = true;
 
-    const href = e.currentTarget.getAttribute("href");
     if (href && href !== "#") {
       const target = document.querySelector(href);
       if (target) {
-        const offset = 0;
-        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        const top = target.getBoundingClientRect().top + window.scrollY;
         window.scrollTo({ top, behavior: "smooth" });
       }
     }
@@ -316,16 +336,59 @@ export default function Navbar() {
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-8">
-            {links.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={handleNavClick}
-                className="text-xs uppercase tracking-[0.2em] text-muted hover:text-foreground transition-colors duration-300"
-              >
-                {link.label}
-              </a>
-            ))}
+            {links.map((link) =>
+              link.hasDropdown ? (
+                <div
+                  key={link.href}
+                  ref={dropdownRef}
+                  className="relative"
+                  onMouseEnter={() => setServiziOpen(true)}
+                  onMouseLeave={() => setServiziOpen(false)}
+                >
+                  <a
+                    href={link.href}
+                    onClick={handleNavClick}
+                    className={`text-xs uppercase tracking-[0.2em] transition-colors duration-300 ${
+                      pathname?.startsWith("/servizi")
+                        ? "text-accent"
+                        : "text-muted hover:text-foreground"
+                    }`}
+                  >
+                    {link.label}
+                  </a>
+                  {/* Desktop dropdown */}
+                  <div
+                    className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 min-w-40 backdrop-blur-xl bg-surface/80 border border-border rounded transition-all duration-200 ${
+                      serviziOpen
+                        ? "opacity-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 -translate-y-1 pointer-events-none"
+                    }`}
+                  >
+                    <div className="py-2 flex flex-col">
+                      {serviziLinks.map((sl) => (
+                        <a
+                          key={sl.href}
+                          href={sl.href}
+                          onClick={handleNavClick}
+                          className="px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-muted hover:text-foreground hover:bg-white/5 transition-colors duration-200 whitespace-nowrap"
+                        >
+                          {sl.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={handleNavClick}
+                  className="text-xs uppercase tracking-[0.2em] text-muted hover:text-foreground transition-colors duration-300"
+                >
+                  {link.label}
+                </a>
+              )
+            )}
             <a
               href={isLoggedIn ? "/dashboard" : "/login"}
               className="text-xs uppercase tracking-[0.2em] text-accent hover:text-foreground transition-colors duration-300"
@@ -357,20 +420,55 @@ export default function Navbar() {
         {/* Mobile menu */}
         <div
           className={`md:hidden overflow-hidden transition-all duration-500 ${
-            menuOpen ? "max-h-48 border-b border-border" : "max-h-0"
+            menuOpen
+              ? `border-b border-border ${serviziMobileOpen ? "max-h-72" : "max-h-48"}`
+              : "max-h-0"
           }`}
         >
           <div className="px-8 pb-6 pt-2 bg-background/95 backdrop-blur-xl flex flex-col gap-4">
-            {links.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={handleNavClick}
-                className="text-xs uppercase tracking-[0.2em] text-muted hover:text-foreground transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
+            {links.map((link) =>
+              link.hasDropdown ? (
+                <div key={link.href} className="flex flex-col gap-2">
+                  <button
+                    onClick={() => setServiziMobileOpen((v) => !v)}
+                    className={`text-xs uppercase tracking-[0.2em] text-left transition-colors ${
+                      pathname?.startsWith("/servizi") || serviziMobileOpen
+                        ? "text-accent"
+                        : "text-muted hover:text-foreground"
+                    }`}
+                  >
+                    {link.label}
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ${
+                      serviziMobileOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="pl-4 flex flex-col gap-3 pt-1">
+                      {serviziLinks.map((sl) => (
+                        <a
+                          key={sl.href}
+                          href={sl.href}
+                          onClick={() => setMenuOpen(false)}
+                          className="text-[11px] uppercase tracking-[0.2em] text-muted hover:text-foreground transition-colors"
+                        >
+                          {sl.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={handleNavClick}
+                  className="text-xs uppercase tracking-[0.2em] text-muted hover:text-foreground transition-colors"
+                >
+                  {link.label}
+                </a>
+              )
+            )}
             <a
               href={isLoggedIn ? "/dashboard" : "/login"}
               className="text-xs uppercase tracking-[0.2em] text-accent hover:text-foreground transition-colors"
