@@ -19,13 +19,13 @@ const row2 = [...projects].reverse();
 
 function ProjectCard({ name, tag, image }: { name: string; tag: string; image: string }) {
   return (
-    <div className="shrink-0 w-md aspect-16/10 relative border border-border bg-surface/40 overflow-hidden group">
+    <div className="shrink-0 w-md aspect-video relative border border-border bg-surface/40 overflow-hidden group">
       <Image
         src={image}
         alt={name}
         fill
         sizes="(max-width: 768px) 90vw, 42rem"
-        className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
+        className="object-contain object-center grayscale saturate-0 transition-[transform,filter] duration-700 group-hover:grayscale-0 group-hover:saturate-100"
       />
       <div className="absolute inset-0 bg-linear-to-t from-background/80 via-background/20 to-transparent" />
       <div className="absolute inset-0 flex flex-col justify-end p-7">
