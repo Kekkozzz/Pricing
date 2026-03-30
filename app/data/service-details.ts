@@ -266,8 +266,8 @@ const shopSaas: ServicePageData = {
   problemSolution: {
     problems: [
       {
-        text: "L'e-commerce italiano cresce del 13% annuo, chi non vende online perde quote",
-        bold: "13% annuo",
+        text: "L'e-commerce italiano cresce del ~10% annuo, chi non vende online perde quote",
+        bold: "10% annuo",
       },
       {
         text: "Piattaforme come Shopify costano €300+/mese con personalizzazione limitata",
