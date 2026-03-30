@@ -60,11 +60,9 @@ const WIZARD_STORAGE_KEY = "wizard_state";
 const WIZARD_MAX_AGE = 30 * 60 * 1000; // 30 minutes
 
 export default function PricingSection() {
-  // Read restored state via useState initializer (runs once, no ref access during render)
+  // Read restored state from localStorage (independent of URL query params)
   const [restoredState] = useState(() => {
     if (typeof window === "undefined") return null;
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("restore") !== "wizard") return null;
     try {
       const raw = localStorage.getItem(WIZARD_STORAGE_KEY);
       if (!raw) return null;
@@ -73,11 +71,6 @@ export default function PricingSection() {
         localStorage.removeItem(WIZARD_STORAGE_KEY);
         return null;
       }
-      localStorage.removeItem(WIZARD_STORAGE_KEY);
-      const url = new URL(window.location.href);
-      url.searchParams.delete("restore");
-      window.history.replaceState({}, "", url.pathname + url.search + url.hash);
-      document.cookie = "auth_next=; Path=/; Max-Age=0; SameSite=Lax";
       return saved as {
         catIndex: number | null;
         tierKey: TierKey | null;
@@ -123,9 +116,16 @@ export default function PricingSection() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Scroll to pricing section after wizard state restore
+  // Cleanup after wizard state restore: clear localStorage, URL params, and cookie
   useEffect(() => {
     if (restoredState) {
+      localStorage.removeItem(WIZARD_STORAGE_KEY);
+      const url = new URL(window.location.href);
+      if (url.searchParams.has("restore")) {
+        url.searchParams.delete("restore");
+        window.history.replaceState({}, "", url.pathname + url.search + url.hash);
+      }
+      document.cookie = "auth_next=; Path=/; Max-Age=0; SameSite=Lax";
       const el = document.getElementById("pricing");
       if (el) el.scrollIntoView({ behavior: "instant" });
     }
