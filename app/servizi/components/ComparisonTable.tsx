@@ -37,12 +37,6 @@ const rows = [
     freelancer: "Limitato",
     agenzia: "A pagamento",
   },
-  {
-    aspect: "Wizard configuratore",
-    noi: "✓",
-    freelancer: "✗",
-    agenzia: "✗",
-  },
 ];
 
 function CellValue({ value, highlight }: { value: string; highlight?: boolean }) {
@@ -112,7 +106,7 @@ export default function ComparisonTable() {
 
         {/* Table wrapper — horizontal scroll on mobile */}
         <div ref={tableRef} className="overflow-x-auto -mx-8 px-8">
-          <div className="min-w-[560px]">
+          <div className="min-w-140">
             {/* Column headers */}
             <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr] gap-0 mb-2">
               <div className="py-3 px-4" />
@@ -144,13 +138,13 @@ export default function ComparisonTable() {
               >
                 {/* Aspect */}
                 <div className="py-4 px-4">
-                  <span className="text-xs text-muted/70 font-mono uppercase tracking-[0.1em]">
+                  <span className="text-xs text-muted/70 font-mono uppercase tracking-widest">
                     {row.aspect}
                   </span>
                 </div>
 
                 {/* Noi — highlighted column */}
-                <div className="py-4 px-4 bg-accent/[0.04] border-l border-r border-accent/10">
+                <div className="py-4 px-4 bg-accent/4 border-l border-r border-accent/10">
                   <CellValue value={row.noi} highlight />
                 </div>
 

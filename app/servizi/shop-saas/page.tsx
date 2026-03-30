@@ -18,11 +18,11 @@ const SERVICE_ID = "shop-saas";
 export const metadata: Metadata = {
   title: "Shop & SaaS — Prezzi e Pacchetti | Edizioni Duepuntozero",
   description:
-    "E-commerce e piattaforme SaaS con checkout Stripe. Da €999, consegna in 5 giorni. Pagamenti sicuri, area clienti, prezzo trasparente.",
+    "Piattaforme per abbonamenti e servizi online con checkout Stripe. Da €999, consegna in 5 giorni. Pagamenti sicuri, area clienti, prezzo trasparente.",
   openGraph: {
     title: "Shop & SaaS — Prezzi e Pacchetti | Edizioni Duepuntozero",
     description:
-      "E-commerce e piattaforme SaaS con checkout Stripe. Da €999, consegna in 5 giorni. Pagamenti sicuri, area clienti, prezzo trasparente.",
+      "Piattaforme per abbonamenti e servizi online con checkout Stripe. Da €999, consegna in 5 giorni. Pagamenti sicuri, area clienti, prezzo trasparente.",
     type: "website",
   },
 };
@@ -32,7 +32,7 @@ const serviceSchema = {
   "@type": "Service",
   name: "Shop & SaaS",
   description:
-    "E-commerce e piattaforme SaaS con checkout Stripe. Da €999, consegna in 5 giorni. Pagamenti sicuri, area clienti, prezzo trasparente.",
+    "Piattaforme per abbonamenti e servizi online con checkout Stripe. Da €999, consegna in 5 giorni. Pagamenti sicuri, area clienti, prezzo trasparente.",
   provider: {
     "@type": "Organization",
     name: "Edizioni Duepuntozero",
@@ -65,10 +65,10 @@ const faqSchema = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "Posso vendere prodotti digitali e fisici?",
+      name: "Posso vendere solo servizi online e abbonamenti?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Sì, tutti i tier supportano entrambi i tipi di prodotto.",
+        text: "Sì, l'offerta Shop & SaaS è pensata proprio per servizi digitali, membership e modelli ricorrenti.",
       },
     },
     {
@@ -97,7 +97,7 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      name: "Quanti prodotti posso aggiungere dopo?",
+      name: "Quanti piani/offerte posso aggiungere dopo?",
       acceptedAnswer: {
         "@type": "Answer",
         text: "Entro i limiti del tier scelto. L'upgrade a un tier superiore è possibile in qualsiasi momento.",

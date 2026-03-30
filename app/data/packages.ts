@@ -121,7 +121,7 @@ export const categories: ServiceCategory[] = [
     icon: "shopping-bag",
     lottie: "/Saas.json",
     description:
-      "Vendi online dal giorno uno — shop completo con pagamenti sicuri, checkout Stripe e area clienti",
+      "Vendi servizi online dal giorno uno — piattaforma con checkout Stripe e area clienti",
     startingPrice: "€999",
     tiers: {
       base: {
@@ -129,14 +129,14 @@ export const categories: ServiceCategory[] = [
         price: "€999",
         priceNumeric: 999,
         frequency: "una tantum",
-        summary: "Landing + checkout · 3 prodotti · 5–7 giorni",
+        summary: "Landing + checkout · 3 piani · 5–7 giorni",
       },
       pro: {
         name: "Pro",
         price: "€1.999",
         priceNumeric: 1999,
         frequency: "una tantum",
-        summary: "Shop completo · 20 prodotti · 7–10 giorni",
+        summary: "Piattaforma completa · 20 piani · 7–10 giorni",
       },
       premium: {
         name: "Premium",
@@ -154,7 +154,7 @@ export const categories: ServiceCategory[] = [
         premium: "Piattaforma SaaS",
       },
       {
-        name: "Prodotti / piani",
+        name: "Piani / offerte",
         base: "Fino a 3",
         pro: "Fino a 20",
         premium: "Illimitati",

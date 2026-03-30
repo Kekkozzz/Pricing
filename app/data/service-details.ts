@@ -260,17 +260,17 @@ const shopSaas: ServicePageData = {
     headline: "Vendi online,",
     headlineAccent: "dal giorno uno.",
     description:
-      "Shop completo con pagamenti sicuri, checkout Stripe e area clienti. Dalla landing con checkout alla piattaforma SaaS completa.",
+      "Piattaforme per abbonamenti e servizi online con pagamenti sicuri, checkout Stripe e area clienti. Dalla landing con checkout alla piattaforma SaaS completa.",
     priceLabel: "Da €999 · Consegna da 5 giorni",
   },
   problemSolution: {
     problems: [
       {
-        text: "L'e-commerce italiano cresce del ~10% annuo, chi non vende online perde quote",
-        bold: "10% annuo",
+        text: "La subscription economy cresce rapidamente: chi non attiva ricavi ricorrenti resta indietro",
+        bold: "ricavi ricorrenti",
       },
       {
-        text: "Piattaforme come Shopify costano €300+/mese con personalizzazione limitata",
+        text: "Piattaforme no-code costano €300+/mese con personalizzazione limitata",
         bold: "€300+/mese",
       },
       {
@@ -284,7 +284,7 @@ const shopSaas: ServicePageData = {
     ],
     solutions: [
       {
-        text: "Shop pronto con Stripe integrato",
+        text: "Piattaforma pronta con Stripe integrato",
         bold: "Stripe integrato",
       },
       {
@@ -306,30 +306,30 @@ const shopSaas: ServicePageData = {
       key: "base",
       tagline: "Inizia a vendere subito",
       description:
-        "Landing page con checkout Stripe per fino a 3 prodotti. Email transazionali incluse. Perfetto per testare un'idea o vendere pochi prodotti senza complessità.",
+        "Landing page con checkout Stripe per fino a 3 piani o servizi digitali. Email transazionali incluse. Perfetto per validare un'offerta online senza complessità.",
       highlighted: false,
       includes:
-        "Landing + checkout · Fino a 3 prodotti · Checkout Stripe · Email transazionali · 1 revisione · Consegna 5-7 giorni",
+        "Landing + checkout · Fino a 3 piani/servizi · Checkout Stripe · Email transazionali · 1 revisione · Consegna 5-7 giorni",
       ctaType: "wizard",
     },
     {
       key: "pro",
       tagline: "Il tuo shop completo",
       description:
-        "Shop completo fino a 20 prodotti con abbonamenti ricorrenti, area clienti base, coupon e sconti. Per chi vuole vendere seriamente online.",
+        "Piattaforma completa fino a 20 piani/offerte con abbonamenti ricorrenti, area clienti base, coupon e sconti. Per chi vuole scalare la vendita di servizi online.",
       highlighted: true,
       includes:
-        "Shop completo · Fino a 20 prodotti · Abbonamenti · Area clienti · Coupon · 3 revisioni · Consegna 7-10 giorni",
+        "Piattaforma completa · Fino a 20 piani/offerte · Abbonamenti · Area clienti · Coupon · 3 revisioni · Consegna 7-10 giorni",
       ctaType: "wizard",
     },
     {
       key: "premium",
       tagline: "La tua piattaforma SaaS",
       description:
-        "Piattaforma completa con prodotti illimitati, area clienti avanzata, webhook e automazioni. Per chi vuole costruire un business digitale scalabile.",
+        "Piattaforma completa con piani e offerte illimitate, area clienti avanzata, webhook e automazioni. Per chi vuole costruire un business digitale scalabile.",
       highlighted: false,
       includes:
-        "Piattaforma SaaS · Prodotti illimitati · Area clienti avanzata · Webhook · Automazioni · Revisioni illimitate · Consegna 10-15 giorni",
+        "Piattaforma SaaS · Piani/offerte illimitate · Area clienti avanzata · Webhook · Automazioni · Revisioni illimitate · Consegna 10-15 giorni",
       ctaType: "wizard",
     },
   ],
@@ -352,7 +352,7 @@ const shopSaas: ServicePageData = {
       icon: "user",
       name: "Area Clienti",
       description:
-        "Login, storico ordini, gestione profilo. Il tier Base include solo tracking ordini. Pro: area clienti base. Premium: dashboard personalizzata con analytics per il cliente.",
+        "Login, gestione profilo, storico pagamenti e abbonamenti. Il tier Base include un'area cliente essenziale. Pro: area clienti base. Premium: dashboard personalizzata con analytics per il cliente.",
       tiers: "Pro / Premium",
     },
     {
@@ -366,21 +366,21 @@ const shopSaas: ServicePageData = {
       icon: "zap",
       name: "Webhook e Automazioni",
       description:
-        "Integrazione con CRM, email marketing, Zapier e workflow custom. Automatizza notifiche, aggiornamenti inventario e sincronizzazione dati con i tuoi strumenti.",
+        "Integrazione con CRM, email marketing, Zapier e workflow custom. Automatizza notifiche, rinnovi e sincronizzazione dati con i tuoi strumenti.",
       tiers: "Premium",
     },
     {
       icon: "mail",
       name: "Email Transazionali",
       description:
-        "Conferma ordine, spedizione, fattura — template personalizzabili con il tuo brand. Il cliente riceve comunicazioni professionali ad ogni step.",
+        "Conferma iscrizione, rinnovo, fattura — template personalizzabili con il tuo brand. Il cliente riceve comunicazioni professionali ad ogni step.",
       tiers: "Tutti i tier",
     },
   ],
   useCases: [
     {
-      title: "Negozi Fisici Online",
-      description: "Prodotti fisici, ritiro in store, espansione e-commerce.",
+      title: "Membership & Community",
+      description: "Piani ricorrenti, contenuti riservati, area membri.",
       recommendedTier: "Base o Pro",
     },
     {
@@ -394,15 +394,15 @@ const shopSaas: ServicePageData = {
       recommendedTier: "Premium",
     },
     {
-      title: "Aziende B2B",
-      description: "Catalogo, preventivi, area riservata.",
+      title: "Aziende di Servizi",
+      description: "Pacchetti consulenza, piani ricorrenti, area riservata.",
       recommendedTier: "Pro o Premium",
     },
   ],
   faq: [
     {
-      question: "Posso vendere prodotti digitali e fisici?",
-      answer: "Sì, tutti i tier supportano entrambi i tipi di prodotto.",
+      question: "Posso vendere solo servizi online e abbonamenti?",
+      answer: "Sì, l'offerta Shop & SaaS è pensata proprio per servizi digitali, membership e modelli ricorrenti.",
     },
     {
       question: "Come funzionano i pagamenti?",
@@ -420,7 +420,7 @@ const shopSaas: ServicePageData = {
         "Stripe calcola l'IVA automaticamente. Integrazione disponibile con i principali tool di fatturazione italiana.",
     },
     {
-      question: "Quanti prodotti posso aggiungere dopo?",
+      question: "Quanti piani/offerte posso aggiungere dopo?",
       answer:
         "Entro i limiti del tier scelto. L'upgrade a un tier superiore è possibile in qualsiasi momento.",
     },
