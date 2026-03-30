@@ -1,50 +1,17 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { UseCase } from "@/app/data/service-details";
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface UseCasesProps {
   cases: UseCase[];
 }
 
 export default function UseCases({ cases }: UseCasesProps) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    const grid = gridRef.current;
-    if (!section || !grid) return;
-
-    const cards = grid.querySelectorAll<HTMLElement>(".use-case-card");
-
-    const ctx = gsap.context(() => {
-      gsap.from(cards, {
-        y: 32,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power2.out",
-        stagger: 0.12,
-        scrollTrigger: {
-          trigger: section,
-          start: "top 80%",
-          once: true,
-        },
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <section ref={sectionRef} className="relative py-24 md:py-32">
+    <section className="relative py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         {/* Header */}
-        <div className="mb-12 md:mb-16">
+        <div className="mb-12 md:mb-16 animate-fade-up">
           <p className="text-[10px] uppercase tracking-[0.35em] text-accent mb-4 font-mono">
             Per chi è questo servizio
           </p>
@@ -54,14 +21,12 @@ export default function UseCases({ cases }: UseCasesProps) {
         </div>
 
         {/* 2x2 grid */}
-        <div
-          ref={gridRef}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {cases.map((useCase, index) => (
             <div
               key={index}
-              className="use-case-card bg-surface/30 border border-border rounded-xl p-6 md:p-8 hover:border-accent/30 hover:bg-surface/50 transition-all duration-300"
+              className="bg-surface/30 border border-border rounded-xl p-6 md:p-8 hover:border-accent/30 hover:bg-surface/50 transition-all duration-300 animate-fade-up"
+              style={{ animationDelay: `${0.08 * (index + 1)}s` }}
             >
               {/* Title */}
               <h3 className="font-semibold text-accent text-lg mb-3">

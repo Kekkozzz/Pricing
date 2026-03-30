@@ -35,15 +35,9 @@ export default function ServiceHero({ hero, serviceId, lottiePath }: ServiceHero
   return (
     <section
       id="hero"
-      className="relative min-h-[88vh] flex items-center overflow-hidden pt-[120px]"
+      className="relative min-h-[68vh] md:min-h-[74vh] flex items-start overflow-hidden pt-4 md:pt-8"
     >
-      {/* Radial gradient accent overlay */}
-      <div
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,185,154,0.06)_0%,transparent_60%)]"
-        aria-hidden="true"
-      />
-
-      <div className="relative mx-auto max-w-7xl w-full px-6 md:px-8 py-16 md:py-20">
+      <div className="relative mx-auto max-w-7xl w-full px-6 md:px-8 py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
           {/* Left — Copy */}
           <div ref={leftRef}>
@@ -84,11 +78,16 @@ export default function ServiceHero({ hero, serviceId, lottiePath }: ServiceHero
             role="presentation"
           >
             {animationData && (
-              <div className="w-full max-w-[300px] mx-auto">
+              <div className="relative w-full max-w-75 mx-auto">
+                <div
+                  className="absolute -inset-[12%] bg-[radial-gradient(circle,rgba(201,185,154,0.22)_0%,rgba(201,185,154,0.08)_45%,transparent_72%)] blur-2xl"
+                  aria-hidden="true"
+                />
                 <Lottie
                   animationData={animationData}
                   loop
                   autoplay
+                  className="relative z-10"
                 />
               </div>
             )}

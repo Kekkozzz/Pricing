@@ -24,7 +24,6 @@ export default function TierSelector({ serviceId, tierDetails, tiers }: TierSele
 
   return (
     <section className="relative py-24 md:py-32">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-linear-to-b from-accent/6 to-transparent" />
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         <div className="mb-10 md:mb-14">
           <p className="mb-4 text-[10px] uppercase tracking-[0.35em] text-accent font-mono">
@@ -156,7 +155,7 @@ export default function TierSelector({ serviceId, tierDetails, tiers }: TierSele
                   </Link>
                 ) : (
                   <Link
-                    href="/#contatti"
+                    href={`/?service=${serviceId}&tier=${activeTier}#pricing`}
                     className="group inline-flex w-full items-center justify-center gap-2 rounded-lg border border-accent px-6 py-3 text-sm font-medium tracking-wide text-accent transition-all duration-300 hover:bg-accent/10"
                   >
                     Contattaci per un preventivo

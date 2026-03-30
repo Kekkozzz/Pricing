@@ -44,8 +44,8 @@ export default function ServiceCTA({ serviceId }: ServiceCTAProps) {
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto max-w-7xl px-8">
-        <div ref={innerRef} className="max-w-xl">
+      <div className="relative mx-auto max-w-7xl px-6 md:px-8">
+        <div ref={innerRef} className="max-w-xl mx-auto text-center">
           <p className="text-[10px] uppercase tracking-[0.35em] text-accent mb-4 font-mono">
             Inizia ora
           </p>
