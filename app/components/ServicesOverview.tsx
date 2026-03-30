@@ -51,10 +51,9 @@ function ServiceCard({
     };
   }, []);
 
-  // Load lottie data.
+  // Load lottie data only on desktop (hover-capable devices).
   useEffect(() => {
-
-    if (!cat.lottie) return;
+    if (!cat.lottie || isTouch) return;
 
     fetch(cat.lottie)
       .then((res) => res.json())
@@ -62,29 +61,7 @@ function ServiceCard({
       .catch(() => {
         /* silent fallback to icon */
       });
-  }, [cat.lottie]);
-
-  // IntersectionObserver for touch devices
-  useEffect(() => {
-    if (!isTouch || prefersReducedMotion || !animationData) return;
-
-    const card = cardRef.current;
-    if (!card) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          lottieRef.current?.play();
-        } else {
-          lottieRef.current?.stop();
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    observer.observe(card);
-    return () => observer.disconnect();
-  }, [isTouch, prefersReducedMotion, animationData]);
+  }, [cat.lottie, isTouch]);
 
   const handleMouseEnter = useCallback(() => {
     if (isTouch || prefersReducedMotion) return;
@@ -108,11 +85,17 @@ function ServiceCard({
       className="group relative border border-border bg-surface/30 p-8 md:p-10 hover:border-accent/30 hover:bg-surface/60 transition-all duration-500"
     >
       <div className="grid grid-cols-1 sm:grid-cols-[3fr_2fr] gap-6 items-center">
-        {/* Left — Text content */}
-        <div className="order-2 sm:order-1">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-accent font-mono mb-3">
-            {cat.name}
-          </p>
+        {/* Text content */}
+        <div className="order-1">
+          <div className="flex items-center gap-3 mb-3">
+            {/* Icon — visible only on mobile */}
+            <span className="sm:hidden text-accent" aria-hidden="true">
+              {fallbackIcons[cat.icon]}
+            </span>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-accent font-mono">
+              {cat.name}
+            </p>
+          </div>
           <h3 className="text-lg font-medium tracking-tight mb-3 group-hover:text-accent transition-colors duration-300">
             {cat.description}
           </h3>
@@ -127,11 +110,11 @@ function ServiceCard({
           </div>
         </div>
 
-        {/* Right — Lottie or fallback icon */}
+        {/* Lottie — hidden on mobile, visible on desktop */}
         <div
           aria-hidden="true"
           role="presentation"
-          className={`order-1 sm:order-2 flex items-center justify-center max-h-32 sm:max-h-48 transition-[filter] duration-500 ${
+          className={`hidden sm:flex order-2 items-center justify-center max-h-48 transition-[filter] duration-500 ${
             showGrayscale
               ? "grayscale brightness-[0.7] group-hover:grayscale-0 group-hover:brightness-100"
               : ""
@@ -143,7 +126,7 @@ function ServiceCard({
               animationData={animationData}
               loop
               autoplay={false}
-              className="w-full h-full max-h-32 sm:max-h-48"
+              className="w-full h-full max-h-48"
             />
           ) : (
             <span className="text-muted group-hover:text-accent transition-colors duration-500">

@@ -447,20 +447,20 @@ const webApp: ServicePageData = {
   problemSolution: {
     problems: [
       {
-        text: "Fogli Excel e processi manuali costano ore ogni settimana",
-        bold: "ore ogni settimana",
+        text: "Il 60% delle PMI perde oltre 5 ore a settimana in processi manuali",
+        bold: "5 ore a settimana",
       },
       {
-        text: "Software generici non si adattano al tuo workflow",
-        bold: "non si adattano",
+        text: "Il 70% delle aziende abbandona software generici entro 12 mesi",
+        bold: "abbandona entro 12 mesi",
       },
       {
         text: "Le grandi software house chiedono €20.000-€50.000+",
         bold: "€20.000-€50.000+",
       },
       {
-        text: "Manutenzione e aggiornamenti sono un incubo senza supporto",
-        bold: "un incubo",
+        text: "Senza supporto dedicato, il 40% dei progetti software viene abbandonato dopo il lancio",
+        bold: "40% dei progetti",
       },
     ],
     solutions: [
@@ -614,7 +614,7 @@ const mobileApp: ServicePageData = {
     headline: "La tua app,",
     headlineAccent: "su ogni schermo.",
     description:
-      "Applicazioni mobile native e cross-platform con design intuitivo, push notification e pubblicazione sugli store. iOS e Android, un unico investimento.",
+      "Applicazioni mobile cross-platform per iOS e Android con design intuitivo, push notification e pubblicazione sugli store. Un unico investimento, due piattaforme.",
     priceLabel: "Da €3.999 · Consegna da 10 giorni",
   },
   problemSolution: {
@@ -624,8 +624,8 @@ const mobileApp: ServicePageData = {
         bold: "90% del tempo",
       },
       {
-        text: "Sviluppare per iOS E Android separatamente costa il doppio",
-        bold: "costa il doppio",
+        text: "Sviluppare un'app da zero richiede competenze specifiche e mesi di lavoro",
+        bold: "mesi di lavoro",
       },
       {
         text: "Pubblicare sugli store è un processo burocratico complesso",
@@ -638,8 +638,8 @@ const mobileApp: ServicePageData = {
     ],
     solutions: [
       {
-        text: "Un'unica codebase per iOS e Android, o nativa pura per massime performance",
-        bold: "un'unica codebase",
+        text: "Un'unica codebase per iOS e Android — costi dimezzati, stessa qualità",
+        bold: "costi dimezzati",
       },
       {
         text: "Pubblicazione store gestita da noi",
@@ -658,41 +658,41 @@ const mobileApp: ServicePageData = {
   tierDetails: [
     {
       key: "base",
-      tagline: "La tua prima app",
+      tagline: "Il tuo MVP mobile",
       description:
-        "Cross-platform (iOS + Android), complessità semplice, design template, push notification, pubblicazione store. Perfetto per una prima app o un MVP.",
+        "iOS + Android, complessità semplice, design template, push notification, pubblicazione store. Perfetto per una prima app o un MVP.",
       highlighted: false,
       includes:
-        "Cross-platform iOS + Android · Complessità semplice · Design template · Push notification · Pubblicazione store · 2 revisioni · Consegna 10-15 giorni",
+        "iOS + Android · Complessità semplice · Design template · Push notification · Pubblicazione store · 2 revisioni · Consegna 10-15 giorni",
       ctaType: "wizard",
     },
     {
       key: "pro",
-      tagline: "L'app professionale",
+      tagline: "Performance senza compromessi",
       description:
-        "Nativa iOS + Android, complessità media, design custom UI/UX, modalità offline, autenticazione SSO/biometrica, API backend avanzata. Per app che devono performare.",
+        "iOS + Android, complessità media, design custom UI/UX, modalità offline, autenticazione SSO/biometrica, API backend avanzata. Per app che devono performare.",
       highlighted: true,
       includes:
-        "Nativa iOS + Android · Complessità media · Design custom · Offline · SSO/biometrica · API avanzata · 5 revisioni · Consegna 15-25 giorni",
+        "iOS + Android · Complessità media · Design custom · Offline · SSO/biometrica · API avanzata · 5 revisioni · Consegna 15-25 giorni",
       ctaType: "wizard",
     },
     {
       key: "premium",
       tagline: "L'app che cambia il gioco",
       description:
-        "Nativa, complessità elevata, design premium su misura, autenticazione custom, API scalabile, revisioni illimitate. Per chi vuole un prodotto di livello mondiale.",
+        "iOS + Android, complessità elevata, design premium su misura, autenticazione custom, API scalabile, revisioni illimitate. Per chi vuole un prodotto di livello mondiale.",
       highlighted: false,
       includes:
-        "Nativa iOS + Android · Complessità elevata · Design premium · Auth custom · API scalabile · Revisioni illimitate",
+        "iOS + Android · Complessità elevata · Design premium · Auth custom · API scalabile · Revisioni illimitate",
       ctaType: "contact",
     },
   ],
   featureDetails: [
     {
       icon: "smartphone",
-      name: "Cross-platform vs Nativa",
+      name: "iOS + Android",
       description:
-        "Cross-platform (React Native/Flutter) = un codice, due piattaforme, costi ridotti. Nativa = performance massime, accesso completo a tutte le API del dispositivo. Base: cross-platform. Pro/Premium: nativa.",
+        "Un'unica codebase per entrambe le piattaforme grazie a React Native e Flutter. Costi ridotti, tempi rapidi e stessa qualità su iOS e Android. Ogni tier copre entrambi gli store.",
       tiers: "Tutti i tier",
     },
     {
@@ -735,12 +735,12 @@ const mobileApp: ServicePageData = {
     {
       title: "App Vetrina/Companion",
       description: "Estensione del sito/shop, catalogo mobile.",
-      recommendedTier: "Base",
+      recommendedTier: "Base o Pro",
     },
     {
       title: "App di Servizio",
       description: "Prenotazioni, ordini, delivery, loyalty program.",
-      recommendedTier: "Pro",
+      recommendedTier: "Pro o Premium",
     },
     {
       title: "App Core Business",
@@ -750,14 +750,14 @@ const mobileApp: ServicePageData = {
     {
       title: "App Interne",
       description: "Comunicazione team, field service, reporting mobile.",
-      recommendedTier: "Pro",
+      recommendedTier: "Base o Pro",
     },
   ],
   faq: [
     {
-      question: "Meglio cross-platform o nativa?",
+      question: "Su quali tecnologie sviluppate?",
       answer:
-        "Cross-platform (Base) è perfetta per app semplici, costa meno e si sviluppa più velocemente. Nativa (Pro/Premium) per performance critiche, animazioni complesse o accesso hardware avanzato.",
+        "Utilizziamo React Native e Flutter, framework cross-platform che permettono di sviluppare un'unica app per iOS e Android con performance eccellenti e costi contenuti.",
     },
     {
       question: "Quanto costa pubblicare sugli store?",

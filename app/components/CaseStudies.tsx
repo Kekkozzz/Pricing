@@ -39,6 +39,27 @@ function ProjectCard({ name, tag, image }: { name: string; tag: string; image: s
   );
 }
 
+function MobileProjectCard({ name, tag, image }: { name: string; tag: string; image: string }) {
+  return (
+    <div className="aspect-video relative border border-border bg-surface/40 overflow-hidden">
+      <Image
+        src={image}
+        alt={name}
+        fill
+        sizes="45vw"
+        className="object-contain object-center"
+      />
+      <div className="absolute inset-0 bg-linear-to-t from-background/80 via-background/20 to-transparent" />
+      <div className="absolute inset-0 flex flex-col justify-end p-4">
+        <p className="text-[9px] uppercase tracking-[0.2em] text-accent font-mono mb-1">
+          {tag}
+        </p>
+        <p className="text-sm font-medium text-foreground">{name}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function CaseStudies() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const row1Ref = useRef<HTMLDivElement>(null);
@@ -88,26 +109,36 @@ export default function CaseStudies() {
         </h2>
       </div>
 
-      {/* Row 1 — moves left (appears to scroll right) */}
-      <div
-        ref={row1Ref}
-        className="flex gap-6 mb-6"
-        style={{ transform: "translateX(100px)" }}
-      >
-        {[...row1, ...row1].map((p, i) => (
-          <ProjectCard key={`r1-${i}`} name={p.name} tag={p.tag} image={p.image} />
-        ))}
+      {/* Mobile — 2-column grid */}
+      <div className="md:hidden px-4">
+        <div className="grid grid-cols-2 gap-3">
+          {projects.map((p) => (
+            <MobileProjectCard key={p.name} name={p.name} tag={p.tag} image={p.image} />
+          ))}
+        </div>
       </div>
 
-      {/* Row 2 — moves right (appears to scroll left) */}
-      <div
-        ref={row2Ref}
-        className="flex gap-6"
-        style={{ transform: "translateX(-100px)" }}
-      >
-        {[...row2, ...row2].map((p, i) => (
-          <ProjectCard key={`r2-${i}`} name={p.name} tag={p.tag} image={p.image} />
-        ))}
+      {/* Desktop — parallax rows */}
+      <div className="hidden md:block">
+        <div
+          ref={row1Ref}
+          className="flex gap-6 mb-6"
+          style={{ transform: "translateX(100px)" }}
+        >
+          {[...row1, ...row1].map((p, i) => (
+            <ProjectCard key={`r1-${i}`} name={p.name} tag={p.tag} image={p.image} />
+          ))}
+        </div>
+
+        <div
+          ref={row2Ref}
+          className="flex gap-6"
+          style={{ transform: "translateX(-100px)" }}
+        >
+          {[...row2, ...row2].map((p, i) => (
+            <ProjectCard key={`r2-${i}`} name={p.name} tag={p.tag} image={p.image} />
+          ))}
+        </div>
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-border to-transparent" />

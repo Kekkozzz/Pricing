@@ -468,7 +468,7 @@ export default function PricingSection() {
   function renderMobileHeader() {
     if (!cat) return null;
     return (
-      <div className="md:hidden sticky top-16 z-10 bg-background/90 backdrop-blur-xl border-b border-border px-6 py-4">
+      <div className="lg:hidden sticky top-16 z-10 bg-background/90 backdrop-blur-xl border-b border-border px-6 py-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span className="text-accent">{iconMap[cat.icon]}</span>
@@ -884,7 +884,7 @@ export default function PricingSection() {
             Configura il tuo pacchetto
           </h2>
         </div>
-        <div className="border border-border h-175 flex">
+        <div className="border border-border min-h-150 lg:h-175 flex">
           {/* Left Panel — collapses on step 5 */}
           <div
             style={{
@@ -895,7 +895,7 @@ export default function PricingSection() {
                 ? "opacity 0.2s ease-out, width 0.6s ease-in-out 0.1s, border-right-width 0.3s ease-out"
                 : "opacity 0.4s ease-out 0.3s, width 0.6s ease-in-out, border-right-width 0.3s ease-out 0.5s",
             }}
-            className="hidden md:flex flex-col border-r border-border overflow-hidden"
+            className="hidden lg:flex flex-col border-r border-border overflow-hidden"
           >
             {/* 3D Scene area */}
             <div className="relative h-[65%] bg-surface/20 overflow-hidden">
@@ -909,8 +909,8 @@ export default function PricingSection() {
           </div>
           {renderMobileHeader()}
 
-          <div className="flex-1 flex flex-col p-8 md:p-12 lg:p-14 h-full overflow-hidden transition-all duration-700 ease-in-out">
-            <div className="hidden md:block shrink-0">
+          <div className="flex-1 flex flex-col p-6 md:p-8 lg:p-14 h-full overflow-hidden transition-all duration-700 ease-in-out">
+            <div className="hidden lg:block shrink-0">
               <ProgressBar current={step} />
             </div>
 

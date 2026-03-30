@@ -299,7 +299,7 @@ export const categories: ServiceCategory[] = [
     icon: "smartphone",
     lottie: "/Mobile.json",
     description:
-      "La tua app su ogni schermo — applicazioni mobile native e cross-platform con design intuitivo e performance ottimali",
+      "La tua app su ogni schermo — applicazioni mobile cross-platform per iOS e Android con design intuitivo e performance ottimali",
     startingPrice: "€3.999",
     tiers: {
       base: {
@@ -307,29 +307,29 @@ export const categories: ServiceCategory[] = [
         price: "€3.999",
         priceNumeric: 3999,
         frequency: "una tantum",
-        summary: "Cross-platform · Semplice · 10–15 giorni",
+        summary: "Semplice · Template · 10–15 giorni",
       },
       pro: {
         name: "Pro",
         price: "€7.999",
         priceNumeric: 7999,
         frequency: "una tantum",
-        summary: "Nativa · Media · 15–25 giorni",
+        summary: "Media · Custom · 15–25 giorni",
       },
       premium: {
         name: "Premium",
         price: "Su prev.",
         priceNumeric: 0,
         frequency: "personalizzato",
-        summary: "Nativa · Complessa · Da concordare",
+        summary: "Elevata · Premium · Da concordare",
       },
     },
     features: [
       {
         name: "Piattaforme",
-        base: "iOS + Android (cross-platform)",
-        pro: "iOS + Android (nativa)",
-        premium: "iOS + Android (nativa)",
+        base: "iOS + Android",
+        pro: "iOS + Android",
+        premium: "iOS + Android",
       },
       {
         name: "Complessità",

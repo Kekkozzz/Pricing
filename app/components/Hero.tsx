@@ -28,7 +28,7 @@ export default function Hero() {
             <h1 className="animate-fade-up stagger-2 font-display text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight mb-6">
               Il tuo prossimo
               <br />
-              sito web,{" "}
+              progetto digitale,{" "}
               <em className="text-accent">a prezzo chiaro</em>
             </h1>
             <p className="animate-fade-up stagger-3 text-muted text-base md:text-lg leading-relaxed max-w-md mb-10">
