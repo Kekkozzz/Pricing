@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { TierDetail } from "@/app/data/service-details";
 import type { Tier } from "@/app/data/packages";
 
@@ -98,7 +99,7 @@ export default function TierSelector({ serviceId, tierDetails, tiers }: TierSele
 
             {/* CTA */}
             {activeTierDetail.ctaType === "wizard" ? (
-              <a
+              <Link
                 href={`/?service=${serviceId}&tier=${activeTier}#pricing`}
                 className="group inline-flex items-center justify-center gap-2 bg-accent text-[#050505] px-7 py-3.5 text-sm font-medium tracking-wide hover:bg-foreground hover:text-background transition-all duration-300 rounded"
               >
@@ -106,14 +107,14 @@ export default function TierSelector({ serviceId, tierDetails, tiers }: TierSele
                 <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">
                   →
                 </span>
-              </a>
+              </Link>
             ) : (
-              <a
+              <Link
                 href="/#contatti"
                 className="inline-flex items-center justify-center gap-2 border border-accent text-accent px-7 py-3.5 text-sm font-medium tracking-wide hover:bg-accent/10 transition-all duration-300 rounded"
               >
                 Contattaci per un preventivo
-              </a>
+              </Link>
             )}
           </div>
         </div>
