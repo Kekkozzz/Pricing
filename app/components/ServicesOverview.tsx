@@ -14,10 +14,8 @@ const fallbackIcons: Record<string, React.ReactNode> = {
 
 function ServiceCard({
   cat,
-  index,
 }: {
   cat: ServiceCategory;
-  index: number;
 }) {
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const cardRef = useRef<HTMLAnchorElement>(null);
@@ -31,12 +29,6 @@ function ServiceCard({
     if (typeof window === "undefined") return false;
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   });
-
-  const handleClick = useCallback(() => {
-    window.dispatchEvent(
-      new CustomEvent("service-selected", { detail: index })
-    );
-  }, [index]);
 
   // Keep media query preferences in sync.
   useEffect(() => {
@@ -110,8 +102,7 @@ function ServiceCard({
   return (
     <a
       ref={cardRef}
-      href="#pricing"
-      onClick={handleClick}
+      href={'/servizi/' + cat.id}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className="group relative border border-border bg-surface/30 p-8 md:p-10 hover:border-accent/30 hover:bg-surface/60 transition-all duration-500"
@@ -181,8 +172,8 @@ export default function ServicesOverview() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {categories.map((cat, i) => (
-            <ServiceCard key={cat.id} cat={cat} index={i} />
+          {categories.map((cat) => (
+            <ServiceCard key={cat.id} cat={cat} />
           ))}
         </div>
       </div>
