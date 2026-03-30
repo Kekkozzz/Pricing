@@ -15,6 +15,7 @@ export default function ServiceHero({ hero, serviceId, lottiePath }: ServiceHero
   const [animationData, setAnimationData] = useState<any>(null);
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
+  const shouldScaleAnimation = !/website\.json$/i.test(lottiePath);
 
   // Fetch Lottie JSON only if a path is provided
   useEffect(() => {
@@ -87,7 +88,7 @@ export default function ServiceHero({ hero, serviceId, lottiePath }: ServiceHero
                   animationData={animationData}
                   loop
                   autoplay
-                  className="relative z-10 scale-103 md:scale-106"
+                  className={`relative z-10 ${shouldScaleAnimation ? "scale-103 md:scale-106" : "scale-100"}`}
                 />
               </div>
             )}
