@@ -8,7 +8,8 @@ import {
 } from "@/app/lib/gemini";
 import { buildImagePrompt, type PreviewInput } from "@/app/data/preview-prompts";
 import { checkRateLimit } from "@/app/actions/rate-limit";
-import { savePreview } from "@/app/actions/previews";
+import { savePreviewCore } from "@/app/lib/previews/save";
+import { createServerClient } from "@/app/lib/supabase/server";
 
 export const maxDuration = 180;
 
@@ -67,23 +68,38 @@ export async function POST(request: NextRequest) {
     const prompt = buildImagePrompt(input);
     const imageBase64 = await generateImage(prompt);
 
-    // Persist image to Supabase Storage (non-blocking for response)
+    // Resolve authenticated user from request cookies
+    let userId: string | null = null;
+    try {
+      const supabase = await createServerClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      userId = user?.id ?? null;
+    } catch {
+      console.warn("Could not resolve user from cookies in API route");
+    }
+
+    // Persist image to Supabase Storage
     let previewId: string | undefined;
     let signedUrl: string | undefined;
+    let previewSaved = false;
     try {
-      const result = await savePreview(imageBase64, input as Record<string, unknown>);
+      const result = await savePreviewCore(imageBase64, input as Record<string, unknown>, userId);
       if (result.success) {
         previewId = result.previewId;
         signedUrl = result.signedUrl;
+        previewSaved = true;
+      } else {
+        console.error("Preview save returned error:", result.error);
       }
     } catch (storageErr) {
-      console.error("Storage save failed (non-fatal):", storageErr);
+      console.error("Storage save failed:", storageErr);
     }
 
     return Response.json({
       imageBase64,
       previewId,
       imageUrl: signedUrl,
+      previewSaved,
     });
   } catch (err) {
     console.error("Image generation error:", err);

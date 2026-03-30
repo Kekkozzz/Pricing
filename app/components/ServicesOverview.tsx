@@ -99,8 +99,11 @@ function ServiceCard({
           <h3 className="text-lg font-medium tracking-tight mb-3 group-hover:text-accent transition-colors duration-300">
             {cat.description}
           </h3>
-          <p className="text-sm text-muted font-mono mb-6">
+          <p className="text-sm text-muted font-mono mb-2">
             da {cat.startingPrice}
+          </p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-accent font-mono mb-4">
+            Preview AI inclusa
           </p>
           <div className="text-xs text-muted group-hover:text-foreground transition-colors duration-300 flex items-center gap-1">
             Vedi pacchetti

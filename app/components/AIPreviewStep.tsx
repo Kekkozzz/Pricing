@@ -220,9 +220,12 @@ export default function AIPreviewStep({
         throw new Error(data.error || "Errore generazione immagine");
       }
 
-      const { imageBase64: img, previewId: pId } = await imgRes.json();
+      const { imageBase64: img, previewId: pId, previewSaved } = await imgRes.json();
       setImageBase64(img);
       if (pId) setPreviewId(pId);
+      if (!previewSaved) {
+        console.warn("Preview image was not persisted to storage");
+      }
       setState("complete");
 
       // Create draft quote and link preview

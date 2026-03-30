@@ -201,13 +201,22 @@ export async function createDraftQuote(input: CreateDraftQuoteInput, previewId?:
   }
 
   // Link preview to the newly created draft quote
+  const serviceClient = await createServiceRoleClient();
   if (previewId) {
-    const serviceClient = await createServiceRoleClient();
     await serviceClient
       .from("previews")
       .update({ quote_id: data.id })
       .eq("id", previewId)
       .eq("user_id", user.id);
+  } else {
+    // Fallback: link recent unlinked previews for this user (within last 10 min)
+    const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+    await serviceClient
+      .from("previews")
+      .update({ quote_id: data.id })
+      .eq("user_id", user.id)
+      .is("quote_id", null)
+      .gte("created_at", tenMinAgo);
   }
 
   return { success: true as const, quoteId: data.id };
@@ -263,6 +272,35 @@ export async function completeDraftQuote(
   if (error) {
     console.error("Failed to complete draft quote:", error);
     return { success: false, error: error.message };
+  }
+
+  // Ensure previews are linked — fallback for cases where linking failed earlier
+  const serviceClient = await createServiceRoleClient();
+  const { data: linkedPreviews } = await serviceClient
+    .from("previews")
+    .select("id")
+    .eq("quote_id", quoteId);
+
+  if (!linkedPreviews || linkedPreviews.length === 0) {
+    const { data: quoteData } = await serviceClient
+      .from("quotes")
+      .select("created_at")
+      .eq("id", quoteId)
+      .single();
+
+    if (quoteData) {
+      const quoteTime = new Date(quoteData.created_at).getTime();
+      const windowStart = new Date(quoteTime - 15 * 60 * 1000).toISOString();
+      const windowEnd = new Date(quoteTime + 5 * 60 * 1000).toISOString();
+
+      await serviceClient
+        .from("previews")
+        .update({ quote_id: quoteId })
+        .eq("user_id", user.id)
+        .is("quote_id", null)
+        .gte("created_at", windowStart)
+        .lte("created_at", windowEnd);
+    }
   }
 
   return { success: true };

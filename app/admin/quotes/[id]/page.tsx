@@ -43,14 +43,41 @@ export default async function AdminQuoteDetailPage({ params }: Props) {
   }
 
   // Get associated previews
-  const { data: previews } = await supabase
+  const { data: previews } = await serviceClient
     .from("previews")
     .select("*")
     .eq("quote_id", quote.id)
     .order("created_at", { ascending: false });
 
+  let previewData = previews ?? [];
+
+  // Fallback: if no previews linked by quote_id, search by user_id + time window
+  if (previewData.length === 0 && quote.user_id) {
+    const quoteTime = new Date(quote.created_at).getTime();
+    const windowStart = new Date(quoteTime - 15 * 60 * 1000).toISOString();
+    const windowEnd = new Date(quoteTime + 5 * 60 * 1000).toISOString();
+
+    const { data: fallbackPreviews } = await serviceClient
+      .from("previews")
+      .select("*")
+      .eq("user_id", quote.user_id)
+      .gte("created_at", windowStart)
+      .lte("created_at", windowEnd)
+      .order("created_at", { ascending: false });
+
+    previewData = fallbackPreviews ?? [];
+
+    // Auto-link for future lookups
+    if (previewData.length > 0) {
+      await serviceClient
+        .from("previews")
+        .update({ quote_id: quote.id })
+        .in("id", previewData.map((p) => p.id));
+    }
+  }
+
   const previewsWithUrls = await Promise.all(
-    (previews ?? []).map(async (preview) => {
+    previewData.map(async (preview) => {
       const { data: urlData } = await serviceClient.storage
         .from("previews")
         .createSignedUrl(preview.storage_path, 3600);

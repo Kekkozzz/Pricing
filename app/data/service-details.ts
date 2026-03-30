@@ -86,7 +86,7 @@ const sitiWeb: ServicePageData = {
     headlineAccent: "chiavi in mano.",
     description:
       "Siti responsive, veloci e ottimizzati per Google. Dal biglietto da visita digitale al sito corporate completo — design su misura, consegna in giorni, non mesi.",
-    priceLabel: "Da €499 · Consegna da 3 giorni · Prezzo trasparente, senza sorprese",
+    priceLabel: "Da €499 · Consegna da 3 giorni · Preview AI inclusa",
   },
   problemSolution: {
     problems: [
@@ -248,6 +248,11 @@ const sitiWeb: ServicePageData = {
       answer:
         "50% all'ordine, 50% alla consegna. Per i pacchetti Premium con preventivo personalizzato, definiamo insieme le milestone di pagamento.",
     },
+    {
+      question: "Posso vedere un'anteprima del mio sito prima di iniziare?",
+      answer:
+        "Sì. Durante la configurazione del pacchetto, puoi generare una preview AI personalizzata. Descrivi la tua attività, scegli lo stile e i colori — e vedrai un mockup del tuo sito in pochi secondi. Incluso in tutti i pacchetti.",
+    },
   ],
 };
 
@@ -261,7 +266,7 @@ const shopSaas: ServicePageData = {
     headlineAccent: "dal giorno uno.",
     description:
       "Piattaforme per abbonamenti e servizi online con pagamenti sicuri, checkout Stripe e area clienti. Dalla landing con checkout alla piattaforma SaaS completa.",
-    priceLabel: "Da €999 · Consegna da 5 giorni",
+    priceLabel: "Da €999 · Consegna da 5 giorni · Preview AI inclusa",
   },
   problemSolution: {
     problems: [
@@ -429,6 +434,11 @@ const shopSaas: ServicePageData = {
       answer:
         "Stripe è certificato PCI DSS Level 1 — lo standard più alto per la sicurezza dei pagamenti online.",
     },
+    {
+      question: "Posso vedere un'anteprima della mia piattaforma prima di iniziare?",
+      answer:
+        "Sì. Durante la configurazione del pacchetto, puoi generare una preview AI personalizzata. Descrivi la tua attività, scegli lo stile e i colori — e vedrai un mockup della tua piattaforma in pochi secondi. Incluso in tutti i pacchetti.",
+    },
   ],
 };
 
@@ -442,7 +452,7 @@ const webApp: ServicePageData = {
     headlineAccent: "i tuoi processi.",
     description:
       "Applicazioni web su misura con dashboard, autenticazione, notifiche e database ottimizzato. Dalla gestione interna alla piattaforma pubblica.",
-    priceLabel: "Da €2.999 · Consegna da 7 giorni",
+    priceLabel: "Da €2.999 · Consegna da 7 giorni · Preview AI inclusa",
   },
   problemSolution: {
     problems: [
@@ -602,6 +612,11 @@ const webApp: ServicePageData = {
       answer:
         "Sviluppo incrementale disponibile. Ogni feature aggiuntiva ha un preventivo separato.",
     },
+    {
+      question: "Posso vedere un'anteprima della mia web app prima di iniziare?",
+      answer:
+        "Sì. Durante la configurazione del pacchetto, puoi generare una preview AI personalizzata. Descrivi il tuo progetto, scegli lo stile e i colori — e vedrai un mockup della tua web app in pochi secondi. Incluso in tutti i pacchetti.",
+    },
   ],
 };
 
@@ -615,7 +630,7 @@ const mobileApp: ServicePageData = {
     headlineAccent: "su ogni schermo.",
     description:
       "Applicazioni mobile cross-platform per iOS e Android con design intuitivo, push notification e pubblicazione sugli store. Un unico investimento, due piattaforme.",
-    priceLabel: "Da €3.999 · Consegna da 10 giorni",
+    priceLabel: "Da €3.999 · Consegna da 10 giorni · Preview AI inclusa",
   },
   problemSolution: {
     problems: [
@@ -783,6 +798,11 @@ const mobileApp: ServicePageData = {
       question: "Quanto tempo per un aggiornamento dell'app?",
       answer:
         "Bug fix: 24-48h. Nuove feature: preventivo separato con timeline dedicata.",
+    },
+    {
+      question: "Posso vedere un'anteprima della mia app prima di iniziare?",
+      answer:
+        "Sì. Durante la configurazione del pacchetto, puoi generare una preview AI personalizzata. Descrivi il tuo progetto, scegli lo stile e i colori — e vedrai un mockup della tua app in pochi secondi. Incluso in tutti i pacchetti.",
     },
   ],
 };

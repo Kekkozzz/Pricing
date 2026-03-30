@@ -35,7 +35,10 @@ export default function Hero() {
               Pacchetti completi per ogni esigenza. Scegli, personalizza,
               parti. Senza sorprese.
             </p>
-            <div className="animate-fade-up stagger-4 flex flex-col sm:flex-row gap-4">
+            <p className="animate-fade-up stagger-4 text-[10px] uppercase tracking-[0.35em] text-accent font-mono mb-8">
+              ✦ Preview AI inclusa — vedi il tuo progetto prima di iniziare
+            </p>
+            <div className="animate-fade-up stagger-5 flex flex-col sm:flex-row gap-4">
               <a
                 href="#pricing"
                 className="group inline-flex items-center justify-center gap-2 bg-foreground text-background px-7 py-3.5 text-sm font-medium tracking-wide hover:bg-accent hover:text-background transition-all duration-300"
@@ -55,7 +58,7 @@ export default function Hero() {
           </div>
 
           {/* Right — Lottie animation */}
-          <div className="animate-fade-up stagger-5" aria-hidden="true" role="presentation">
+          <div className="animate-fade-up stagger-6" aria-hidden="true" role="presentation">
             <div className="relative w-full scale-125 origin-center">
               {animationData && (
                 <Lottie
