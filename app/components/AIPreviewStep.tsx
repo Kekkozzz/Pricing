@@ -38,6 +38,10 @@ type AIPreviewStepProps = {
   addOns: string[];
   addOnsData: { name: string; price: string; priceNumeric: number; recurring: boolean }[];
   initialData?: AIFormData | null;
+  persistedImage?: string | null;
+  persistedPreviewId?: string | null;
+  onImageChange?: (img: string | null) => void;
+  onPreviewIdChange?: (id: string | null) => void;
   onProceed: () => void;
   onStateChange?: (state: { canGenerate: boolean; isGenerating: boolean; isComplete: boolean }) => void;
   onFormDataChange?: (data: AIFormData) => void;
@@ -63,6 +67,10 @@ export default function AIPreviewStep({
   addOns,
   addOnsData,
   initialData,
+  persistedImage,
+  persistedPreviewId,
+  onImageChange,
+  onPreviewIdChange,
   onProceed,
   onStateChange,
   onFormDataChange,
@@ -80,9 +88,19 @@ export default function AIPreviewStep({
   const [referenceUrls, setReferenceUrls] = useState(initialData?.referenceUrls ?? "");
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
-  const [state, setState] = useState<GenerationState>("idle");
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
-  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [state, setState] = useState<GenerationState>(persistedImage ? "complete" : "idle");
+  const [imageBase64, setImageBase64Local] = useState<string | null>(persistedImage ?? null);
+  const [previewId, setPreviewIdLocal] = useState<string | null>(persistedPreviewId ?? null);
+
+  const setImageBase64 = useCallback((img: string | null) => {
+    setImageBase64Local(img);
+    onImageChange?.(img);
+  }, [onImageChange]);
+
+  const setPreviewId = useCallback((id: string | null) => {
+    setPreviewIdLocal(id);
+    onPreviewIdChange?.(id);
+  }, [onPreviewIdChange]);
   const [errorMsg, setErrorMsg] = useState("");
   const [isFullscreen, setIsFullscreen] = useState(false);
 

@@ -1,11 +1,55 @@
 "use client";
 
 import { useState } from "react";
-import type { FeatureDetail } from "@/app/data/service-details";
+import {
+  BarChart3,
+  Bell,
+  CreditCard,
+  Database,
+  FileText,
+  Link,
+  Lock,
+  LucideIcon,
+  Mail,
+  Palette,
+  PenSquare,
+  RefreshCw,
+  Search,
+  Settings,
+  Smartphone,
+  Store,
+  Tag,
+  User,
+  WifiOff,
+  Zap,
+} from "lucide-react";
+import type { FeatureDetail, FeatureIcon } from "@/app/data/service-details";
 
 interface FeatureDeepDiveProps {
   features: FeatureDetail[];
 }
+
+const featureIconMap: Record<FeatureIcon, LucideIcon> = {
+  palette: Palette,
+  search: Search,
+  "file-text": FileText,
+  "chart-bar": BarChart3,
+  "pen-square": PenSquare,
+  "credit-card": CreditCard,
+  "refresh-cw": RefreshCw,
+  user: User,
+  tag: Tag,
+  zap: Zap,
+  mail: Mail,
+  lock: Lock,
+  database: Database,
+  bell: Bell,
+  link: Link,
+  smartphone: Smartphone,
+  "wifi-off": WifiOff,
+  store: Store,
+  settings: Settings,
+};
 
 export default function FeatureDeepDive({ features }: FeatureDeepDiveProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -31,6 +75,7 @@ export default function FeatureDeepDive({ features }: FeatureDeepDiveProps) {
         <div className="border border-border rounded-xl overflow-hidden divide-y divide-border">
           {features.map((feature, index) => {
             const isOpen = openIndex === index;
+            const Icon = featureIconMap[feature.icon];
 
             return (
               <div key={index}>
@@ -40,9 +85,9 @@ export default function FeatureDeepDive({ features }: FeatureDeepDiveProps) {
                   className="w-full flex items-center gap-4 px-6 md:px-8 py-5 text-left hover:bg-surface/40 transition-colors duration-200"
                   aria-expanded={isOpen}
                 >
-                  {/* Emoji icon */}
+                  {/* Feature icon */}
                   <span className="text-xl shrink-0" aria-hidden="true">
-                    {feature.icon}
+                    <Icon size={18} strokeWidth={1.75} />
                   </span>
 
                   {/* Name */}

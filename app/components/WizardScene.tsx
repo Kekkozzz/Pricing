@@ -464,6 +464,27 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
     // Render one static frame immediately (so it's not blank)
     renderer.render(scene, camera);
 
+    // WebGL context loss safety net
+    const canvas = renderer.domElement;
+    canvas.addEventListener("webglcontextlost", (e) => {
+      e.preventDefault();
+      if (sceneRef.current) {
+        sceneRef.current.isRunning = false;
+        cancelAnimationFrame(sceneRef.current.animId);
+      }
+    });
+    canvas.addEventListener("webglcontextrestored", () => {
+      if (sceneRef.current && container) {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        if (w > 0 && h > 0) {
+          sceneRef.current.renderer.setSize(w, h);
+          sceneRef.current.isRunning = true;
+          sceneRef.current.animId = requestAnimationFrame(animate);
+        }
+      }
+    });
+
     // Start animation only when visible in viewport
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -486,18 +507,21 @@ export default function WizardScene({ serviceId, step }: WizardSceneProps) {
     );
     observer.observe(container);
 
-    const onResize = () => {
-      if (!container || !sceneRef.current) return;
+    // ResizeObserver: fires on ANY container size change (CSS transitions, layout shifts, window resize)
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (!sceneRef.current) return;
+      const { width, height } = entries[0].contentRect;
+      if (width === 0 || height === 0) return;
       const { renderer: r, camera: c } = sceneRef.current;
-      c.aspect = container.clientWidth / container.clientHeight;
+      c.aspect = width / height;
       c.updateProjectionMatrix();
-      r.setSize(container.clientWidth, container.clientHeight);
-    };
-    window.addEventListener("resize", onResize);
+      r.setSize(width, height);
+    });
+    resizeObserver.observe(container);
 
     return () => {
       observer.disconnect();
-      window.removeEventListener("resize", onResize);
+      resizeObserver.disconnect();
       if (sceneRef.current) {
         sceneRef.current.isRunning = false;
         cancelAnimationFrame(sceneRef.current.animId);

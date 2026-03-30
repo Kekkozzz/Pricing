@@ -5,6 +5,7 @@ import {
   Globe,
   ShoppingBag,
   Zap,
+  Star,
   Smartphone,
   FileText,
   Calendar,
@@ -571,9 +572,17 @@ export default function PricingSection() {
               >
                 <div>
                   <p
-                    className={`text-sm font-medium transition-colors duration-300 ${tierKey === k ? "text-accent" : ""}`}
+                    className={`text-sm font-medium transition-colors duration-300 flex items-center gap-1 ${tierKey === k ? "text-accent" : ""}`}
                   >
-                    {t.name} {isPro && "★"}
+                    {t.name}
+                    {isPro && (
+                      <Star
+                        size={13}
+                        strokeWidth={1.8}
+                        className="text-accent/90 fill-accent/10"
+                        aria-label="Piano consigliato"
+                      />
+                    )}
                   </p>
                   <p className="text-[11px] text-muted mt-1">{t.summary}</p>
                 </div>

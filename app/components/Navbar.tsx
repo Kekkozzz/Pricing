@@ -356,25 +356,27 @@ export default function Navbar() {
                   >
                     {link.label}
                   </a>
-                  {/* Desktop dropdown */}
+                  {/* Desktop dropdown — pt-3 acts as invisible bridge to prevent hover gap */}
                   <div
-                    className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 min-w-40 backdrop-blur-xl bg-surface/80 border border-border rounded transition-all duration-200 ${
+                    className={`absolute top-full left-1/2 -translate-x-1/2 pt-3 transition-all duration-200 ${
                       serviziOpen
                         ? "opacity-100 translate-y-0 pointer-events-auto"
                         : "opacity-0 -translate-y-1 pointer-events-none"
                     }`}
                   >
-                    <div className="py-2 flex flex-col">
-                      {serviziLinks.map((sl) => (
-                        <a
-                          key={sl.href}
-                          href={sl.href}
-                          onClick={handleNavClick}
-                          className="px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-muted hover:text-foreground hover:bg-white/5 transition-colors duration-200 whitespace-nowrap"
-                        >
-                          {sl.label}
-                        </a>
-                      ))}
+                    <div className="relative">
+                      <div className="min-w-40 backdrop-blur-xl bg-surface/80 border border-border rounded py-2 flex flex-col">
+                        {serviziLinks.map((sl) => (
+                          <a
+                            key={sl.href}
+                            href={sl.href}
+                            onClick={handleNavClick}
+                            className="px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-muted hover:text-foreground hover:bg-white/5 transition-colors duration-200 whitespace-nowrap"
+                          >
+                            {sl.label}
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>

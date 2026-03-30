@@ -27,8 +27,29 @@ export type TierDetail = {
   ctaType: "wizard" | "contact";  // wizard for fixed-price, contact for "su preventivo"
 };
 
+export type FeatureIcon =
+  | "palette"
+  | "search"
+  | "file-text"
+  | "chart-bar"
+  | "pen-square"
+  | "credit-card"
+  | "refresh-cw"
+  | "user"
+  | "tag"
+  | "zap"
+  | "mail"
+  | "lock"
+  | "database"
+  | "bell"
+  | "link"
+  | "smartphone"
+  | "wifi-off"
+  | "store"
+  | "settings";
+
 export type FeatureDetail = {
-  icon: string;            // emoji
+  icon: FeatureIcon;
   name: string;
   description: string;
   tiers: string;           // e.g. "Pro/Premium" or "Tutti i tier"
@@ -139,35 +160,35 @@ const sitiWeb: ServicePageData = {
   ],
   featureDetails: [
     {
-      icon: "🎨",
+      icon: "palette",
       name: "Design Responsive",
       description:
         "Il tuo sito si adatta automaticamente a ogni dispositivo. Con il 60%+ del traffico web proveniente da mobile, un design responsive non è un extra — è essenziale. Ogni elemento viene testato su desktop, tablet e smartphone.",
       tiers: "Tutti i tier",
     },
     {
-      icon: "🔍",
+      icon: "search",
       name: "SEO On-Page",
       description:
         "Ottimizzazione di meta title, description, heading structure, alt text immagini, sitemap XML e robots.txt. Il tuo sito nasce già pronto per essere trovato su Google. Tier Base: struttura SEO-friendly. Pro: SEO base attiva. Premium: SEO avanzata con schema markup e ottimizzazione Core Web Vitals.",
       tiers: "Pro / Premium",
     },
     {
-      icon: "📝",
+      icon: "file-text",
       name: "CMS (Gestione Contenuti)",
       description:
         "Con i tier Pro e Premium, il tuo sito include un CMS intuitivo che ti permette di aggiornare testi, immagini e contenuti in totale autonomia. Niente più email al web developer per cambiare un numero di telefono.",
       tiers: "Pro / Premium",
     },
     {
-      icon: "📊",
+      icon: "chart-bar",
       name: "Google Analytics",
       description:
         "Sapere chi visita il tuo sito, da dove arriva e cosa fa. Installiamo e configuriamo Google Analytics 4 con gli eventi chiave tracciati: visite, click su CTA, compilazione form, tempo sulla pagina.",
       tiers: "Pro / Premium",
     },
     {
-      icon: "✍️",
+      icon: "pen-square",
       name: "Blog",
       description:
         "Disponibile nel tier Premium. Un blog professionale integrato con categorie, tag, ricerca e paginazione. Lo strumento più potente per il content marketing: pubblica articoli, guida traffico organico e posizionati come esperto nel tuo settore.",
@@ -314,42 +335,42 @@ const shopSaas: ServicePageData = {
   ],
   featureDetails: [
     {
-      icon: "💳",
+      icon: "credit-card",
       name: "Checkout Stripe",
       description:
         "Pagamenti sicuri con carte di credito/debito, Apple Pay, Google Pay. Certificazione PCI DSS compliant. I tuoi clienti pagano in sicurezza, tu ricevi i fondi sul conto in 2-7 giorni.",
       tiers: "Tutti i tier",
     },
     {
-      icon: "🔄",
+      icon: "refresh-cw",
       name: "Abbonamenti Ricorrenti",
       description:
         "Gestione piani con upgrade/downgrade, fatturazione automatica e gestione dei pagamenti falliti. Perfetto per SaaS, membership e servizi in abbonamento.",
       tiers: "Pro / Premium",
     },
     {
-      icon: "👤",
+      icon: "user",
       name: "Area Clienti",
       description:
         "Login, storico ordini, gestione profilo. Il tier Base include solo tracking ordini. Pro: area clienti base. Premium: dashboard personalizzata con analytics per il cliente.",
       tiers: "Pro / Premium",
     },
     {
-      icon: "🏷️",
+      icon: "tag",
       name: "Coupon e Sconti",
       description:
         "Crea codici sconto a percentuale o importo fisso, con scadenza e limiti d'uso. Strumento essenziale per promozioni e acquisizione clienti.",
       tiers: "Pro / Premium",
     },
     {
-      icon: "⚡",
+      icon: "zap",
       name: "Webhook e Automazioni",
       description:
         "Integrazione con CRM, email marketing, Zapier e workflow custom. Automatizza notifiche, aggiornamenti inventario e sincronizzazione dati con i tuoi strumenti.",
       tiers: "Premium",
     },
     {
-      icon: "📧",
+      icon: "mail",
       name: "Email Transazionali",
       description:
         "Conferma ordine, spedizione, fattura — template personalizzabili con il tuo brand. Il cliente riceve comunicazioni professionali ad ogni step.",
@@ -495,35 +516,35 @@ const webApp: ServicePageData = {
   ],
   featureDetails: [
     {
-      icon: "🔐",
+      icon: "lock",
       name: "Autenticazione",
       description:
         "Email/password per il tier Base. SSO con Google/Microsoft/OAuth per Pro. Sistemi custom con 2FA e RBAC (Role-Based Access Control) per Premium.",
       tiers: "Tutti i tier",
     },
     {
-      icon: "📊",
+      icon: "chart-bar",
       name: "Dashboard",
       description:
         "Pannello con metriche, grafici e KPI personalizzati. Dati in tempo reale, export CSV/PDF. Disponibile nei tier Pro e Premium.",
       tiers: "Pro / Premium",
     },
     {
-      icon: "🗄️",
+      icon: "database",
       name: "Database",
       description:
         "PostgreSQL ottimizzato. Base: struttura standard. Pro: indici e query ottimizzate. Premium: sharding, replica e cache layer per massima scalabilità.",
       tiers: "Tutti i tier",
     },
     {
-      icon: "🔔",
+      icon: "bell",
       name: "Notifiche",
       description:
         "Email transazionali per tutti i tier. Push notification e notifiche in-app per Pro e Premium.",
       tiers: "Tutti i tier",
     },
     {
-      icon: "🔗",
+      icon: "link",
       name: "API & Integrazioni",
       description:
         "REST API documentata, webhook, integrazione con servizi terzi. Disponibile nel tier Premium per massima flessibilità.",
@@ -668,42 +689,42 @@ const mobileApp: ServicePageData = {
   ],
   featureDetails: [
     {
-      icon: "📱",
+      icon: "smartphone",
       name: "Cross-platform vs Nativa",
       description:
         "Cross-platform (React Native/Flutter) = un codice, due piattaforme, costi ridotti. Nativa = performance massime, accesso completo a tutte le API del dispositivo. Base: cross-platform. Pro/Premium: nativa.",
       tiers: "Tutti i tier",
     },
     {
-      icon: "🔔",
+      icon: "bell",
       name: "Push Notification",
       description:
         "Notifiche personalizzate, segmentazione utenti, scheduling e deep linking. Raggiungi i tuoi utenti al momento giusto con il messaggio giusto.",
       tiers: "Tutti i tier",
     },
     {
-      icon: "📴",
+      icon: "wifi-off",
       name: "Modalità Offline",
       description:
         "L'app funziona anche senza connessione internet, con sincronizzazione automatica al ritorno online. Essenziale per app usate in mobilità.",
       tiers: "Pro / Premium",
     },
     {
-      icon: "🔐",
+      icon: "lock",
       name: "Autenticazione",
       description:
         "Email e social login per il tier Base. SSO e biometrica (Face ID/Touch ID) per Pro. Sistemi custom per Premium.",
       tiers: "Tutti i tier",
     },
     {
-      icon: "🏪",
+      icon: "store",
       name: "Pubblicazione Store",
       description:
         "Gestiamo tutto il processo di submission su App Store e Google Play, inclusi screenshot, descrizioni e metadata ottimizzati.",
       tiers: "Tutti i tier",
     },
     {
-      icon: "⚙️",
+      icon: "settings",
       name: "API Backend",
       description:
         "Endpoint REST per comunicazione app-server. Base: standard. Pro: ottimizzata con caching. Premium: scalabile con load balancing.",

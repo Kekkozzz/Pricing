@@ -201,7 +201,7 @@ export const categories: ServiceCategory[] = [
     id: "web-app",
     name: "Web App",
     icon: "zap",
-    lottie: "/WebApp.json",
+    lottie: "/WebA.json",
     description:
       "Digitalizza i tuoi processi — applicazioni web su misura con dashboard, notifiche e supporto dedicato",
     startingPrice: "€2.999",
