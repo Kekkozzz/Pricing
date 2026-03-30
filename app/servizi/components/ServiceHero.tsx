@@ -78,7 +78,7 @@ export default function ServiceHero({ hero, serviceId, lottiePath }: ServiceHero
             role="presentation"
           >
             {animationData && (
-              <div className="relative w-full max-w-75 mx-auto">
+              <div className="relative w-full max-w-90 md:max-w-110 lg:max-w-125 mx-auto">
                 <div
                   className="absolute -inset-[12%] bg-[radial-gradient(circle,rgba(201,185,154,0.22)_0%,rgba(201,185,154,0.08)_45%,transparent_72%)] blur-2xl"
                   aria-hidden="true"
@@ -87,7 +87,7 @@ export default function ServiceHero({ hero, serviceId, lottiePath }: ServiceHero
                   animationData={animationData}
                   loop
                   autoplay
-                  className="relative z-10"
+                  className="relative z-10 scale-103 md:scale-106"
                 />
               </div>
             )}
