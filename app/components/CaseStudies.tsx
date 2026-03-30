@@ -1,38 +1,40 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
-  { name: "Studio Legale Rossi", tag: "Sito Web" },
-  { name: "TechFlow SaaS", tag: "Shop & SaaS" },
-  { name: "Clinica Salute+", tag: "Sito Web" },
-  { name: "FinApp Dashboard", tag: "Web App" },
-  { name: "Ristorante Da Mario", tag: "Sito Web" },
-  { name: "EduPlatform", tag: "Web App" },
-  { name: "Boutique Milano", tag: "Shop & SaaS" },
-  { name: "FitTracker", tag: "Mobile App" },
+  { name: "Assipedia", tag: "Progetto Realizzato", image: "/projects/Assipedia.png" },
+  { name: "Giurispedia", tag: "Progetto Realizzato", image: "/projects/Giurispedia.png" },
+  { name: "Leonidia", tag: "Progetto Realizzato", image: "/projects/Leonidia.png" },
+  { name: "Sparta", tag: "Progetto Realizzato", image: "/projects/Sparta.png" },
 ];
 
-const row1 = projects.slice(0, 4);
-const row2 = projects.slice(4, 8);
+const row1 = projects;
+const row2 = [...projects].reverse();
 
-function PlaceholderCard({ name, tag }: { name: string; tag: string }) {
+function ProjectCard({ name, tag, image }: { name: string; tag: string; image: string }) {
   return (
     <div className="shrink-0 w-md aspect-16/10 relative border border-border bg-surface/40 overflow-hidden group">
-      {/* Gradient background unique per card */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(201,185,154,0.08)_0%,transparent_70%)]" />
+      <Image
+        src={image}
+        alt={name}
+        fill
+        sizes="(max-width: 768px) 90vw, 42rem"
+        className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
+      />
+      <div className="absolute inset-0 bg-linear-to-t from-background/80 via-background/20 to-transparent" />
       <div className="absolute inset-0 flex flex-col justify-end p-7">
         <p className="text-[10px] uppercase tracking-[0.2em] text-accent font-mono mb-2">
           {tag}
         </p>
-        <p className="text-base font-medium text-foreground/80">{name}</p>
+        <p className="text-base font-medium text-foreground">{name}</p>
       </div>
-      {/* Hover glow */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(ellipse_at_center,rgba(201,185,154,0.06)_0%,transparent_70%)]" />
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(ellipse_at_center,rgba(201,185,154,0.1)_0%,transparent_70%)]" />
     </div>
   );
 }
@@ -93,7 +95,7 @@ export default function CaseStudies() {
         style={{ transform: "translateX(100px)" }}
       >
         {[...row1, ...row1].map((p, i) => (
-          <PlaceholderCard key={`r1-${i}`} name={p.name} tag={p.tag} />
+          <ProjectCard key={`r1-${i}`} name={p.name} tag={p.tag} image={p.image} />
         ))}
       </div>
 
@@ -104,7 +106,7 @@ export default function CaseStudies() {
         style={{ transform: "translateX(-100px)" }}
       >
         {[...row2, ...row2].map((p, i) => (
-          <PlaceholderCard key={`r2-${i}`} name={p.name} tag={p.tag} />
+          <ProjectCard key={`r2-${i}`} name={p.name} tag={p.tag} image={p.image} />
         ))}
       </div>
 
