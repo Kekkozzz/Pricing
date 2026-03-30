@@ -317,7 +317,7 @@ export default function AIPreviewStep({
             Step 5 di 6
           </p>
           <h3 className="font-display text-2xl md:text-3xl mb-2">
-            Preview AI del tuo sito
+            Preview AI — {serviceName}
           </h3>
           <p className="text-sm text-muted mb-6">
             Raccontaci la tua attività e genereremo una preview personalizzata
@@ -332,7 +332,7 @@ export default function AIPreviewStep({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-[11px] text-white mb-1.5 block">
-                Nome Attività *
+                Nome Attività <span className="text-accent">*</span>
               </label>
               <input
                 type="text"
@@ -345,7 +345,7 @@ export default function AIPreviewStep({
             </div>
             <div>
               <label className="text-[11px] text-white mb-1.5 block">
-                Settore *
+                Settore <span className="text-accent">*</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {SECTORS.map((s) => (
@@ -391,7 +391,7 @@ export default function AIPreviewStep({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-[11px] text-white mb-1.5 block">
-                Stile Preferito *
+                Stile Preferito <span className="text-accent">*</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {STYLES.map((s) => (

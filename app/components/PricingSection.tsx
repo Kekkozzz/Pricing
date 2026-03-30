@@ -100,6 +100,7 @@ export default function PricingSection() {
   // Draft quote state
   const [draftQuoteId, setDraftQuoteId] = useState<string | null>(null);
 
+
   // Auth state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAuthGate, setShowAuthGate] = useState(false);
@@ -884,8 +885,8 @@ export default function PricingSection() {
             Configura il tuo pacchetto
           </h2>
         </div>
-        <div className="border border-border min-h-150 lg:h-175 flex">
-          {/* Left Panel — collapses on step 5 */}
+        <div className="border border-border h-auto lg:h-175 flex">
+          {/* Left Panel — collapses on step 5, hidden below lg */}
           <div
             style={{
               width: step === 5 ? "0%" : "50%",
