@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { siteConfig } from "../data/config";
 
 export default function Footer() {
@@ -6,9 +7,12 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
-            <span className="font-display text-lg text-foreground">
+            <Link
+              href="/"
+              className="font-display text-lg text-foreground hover:text-accent transition-colors"
+            >
               {siteConfig.companyName}
-            </span>
+            </Link>
             <p className="text-xs text-muted mt-1 font-mono">
               P.IVA: XX XXX XXX XXX
             </p>

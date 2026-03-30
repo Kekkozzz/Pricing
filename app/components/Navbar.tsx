@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -327,12 +328,12 @@ export default function Navbar() {
         className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border"
       >
         <div className="mx-auto max-w-7xl flex items-center justify-between px-8 h-16">
-          <a
-            href="#"
+          <Link
+            href="/"
             className="font-display text-lg tracking-tight text-foreground hover:text-accent transition-colors whitespace-nowrap"
           >
             {siteConfig.companyName}
-          </a>
+          </Link>
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-8">
