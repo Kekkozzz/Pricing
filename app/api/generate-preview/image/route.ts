@@ -5,6 +5,8 @@ import {
   GeminiTimeoutError,
   GeminiRateLimitError,
   GeminiNoImageError,
+  GeminiNetworkError,
+  GeminiServerError,
 } from "@/app/lib/gemini";
 import { buildImagePrompt, type PreviewInput } from "@/app/data/preview-prompts";
 import { checkRateLimit } from "@/app/actions/rate-limit";
@@ -128,6 +130,20 @@ export async function POST(request: NextRequest) {
     if (err instanceof GeminiNoImageError) {
       return Response.json(
         { error: "Il modello non ha generato un'immagine. Riprova con una descrizione diversa." },
+        { status: 502 }
+      );
+    }
+
+    if (err instanceof GeminiNetworkError) {
+      return Response.json(
+        { error: "Errore di connessione al servizio AI. Verifica la connessione e riprova." },
+        { status: 502 }
+      );
+    }
+
+    if (err instanceof GeminiServerError) {
+      return Response.json(
+        { error: "Il servizio AI è temporaneamente non disponibile. Riprova tra qualche istante." },
         { status: 502 }
       );
     }

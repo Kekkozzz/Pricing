@@ -39,6 +39,27 @@ export class GeminiConfigError extends Error {
   }
 }
 
+export class GeminiNetworkError extends Error {
+  constructor(cause?: string) {
+    super(`Network error communicating with Gemini${cause ? `: ${cause}` : ""}`);
+    this.name = "GeminiNetworkError";
+  }
+}
+
+export class GeminiServerError extends Error {
+  constructor(status?: number, detail?: string) {
+    super(`Gemini server error${status ? ` (${status})` : ""}${detail ? `: ${detail}` : ""}`);
+    this.name = "GeminiServerError";
+  }
+}
+
+function getErrorStatus(err: unknown): number | null {
+  if (typeof err === "object" && err !== null && "status" in err) {
+    return (err as { status: number }).status;
+  }
+  return null;
+}
+
 function isRateLimitError(err: unknown): boolean {
   if (err instanceof Error) {
     return (
@@ -46,10 +67,37 @@ function isRateLimitError(err: unknown): boolean {
       err.message.includes("RESOURCE_EXHAUSTED")
     );
   }
-  if (typeof err === "object" && err !== null && "status" in err) {
-    return (err as { status: number }).status === 429;
+  return getErrorStatus(err) === 429;
+}
+
+function isNetworkError(err: unknown): boolean {
+  if (err instanceof TypeError) return true; // fetch network failures
+  if (err instanceof Error) {
+    const msg = err.message.toLowerCase();
+    return (
+      msg.includes("fetch failed") ||
+      msg.includes("econnreset") ||
+      msg.includes("econnrefused") ||
+      msg.includes("enotfound") ||
+      msg.includes("socket hang up") ||
+      msg.includes("network") ||
+      msg.includes("aborted")
+    );
   }
   return false;
+}
+
+function isServerError(err: unknown): boolean {
+  const status = getErrorStatus(err);
+  if (status && status >= 500) return true;
+  if (err instanceof Error) {
+    return err.message.includes("500") || err.message.includes("503") || err.message.includes("INTERNAL");
+  }
+  return false;
+}
+
+function isRetryable(err: unknown): boolean {
+  return isNetworkError(err) || isServerError(err);
 }
 
 async function withRetry<T>(
@@ -61,8 +109,23 @@ async function withRetry<T>(
       return await fn();
     } catch (err) {
       if (isRateLimitError(err)) throw new GeminiRateLimitError();
-      if (i === retries) throw err;
-      await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+
+      // On last attempt, classify the error before throwing
+      if (i === retries) {
+        if (isNetworkError(err)) {
+          throw new GeminiNetworkError(err instanceof Error ? err.message : undefined);
+        }
+        if (isServerError(err)) {
+          throw new GeminiServerError(getErrorStatus(err) ?? undefined, err instanceof Error ? err.message : undefined);
+        }
+        throw err;
+      }
+
+      // Only retry on transient errors
+      if (!isRetryable(err)) throw err;
+
+      console.warn(`[gemini] Retryable error (attempt ${i + 1}/${retries + 1}):`, err instanceof Error ? err.message : err);
+      await new Promise((r) => setTimeout(r, 2000 * (i + 1)));
     }
   }
   throw new Error("Unreachable");
