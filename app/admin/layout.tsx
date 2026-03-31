@@ -1,5 +1,4 @@
 import { requireAdmin } from "@/app/lib/auth/admin";
-import { createServerClient } from "@/app/lib/supabase/server";
 import Link from "next/link";
 import LogoutButton from "@/app/dashboard/LogoutButton";
 
@@ -8,14 +7,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireAdmin();
-
-  const supabase = await createServerClient();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name")
-    .eq("id", user.id)
-    .single();
+  await requireAdmin();
 
   return (
     <div className="min-h-screen">

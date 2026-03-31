@@ -1,5 +1,6 @@
 import { adminGetAllPreviews } from "@/app/actions/admin";
 import Link from "next/link";
+import { InteractivePreview } from "@/app/components/InteractivePreview";
 
 export default async function AdminPreviewsPage() {
   const { previews } = await adminGetAllPreviews();
@@ -24,19 +25,9 @@ export default async function AdminPreviewsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {previews.map((preview) => {
             return (
-              <div key={preview.id} className="border border-border group hover:border-accent/30 transition-all duration-300">
-                {preview.signedUrl ? (
-                  <img
-                    src={preview.signedUrl}
-                    alt="AI Preview"
-                    className="w-full aspect-video object-cover"
-                  />
-                ) : (
-                  <div className="w-full aspect-video bg-surface flex items-center justify-center">
-                    <span className="text-xs text-muted">Immagine non disponibile</span>
-                  </div>
-                )}
-                <div className="p-4 space-y-2">
+              <div key={preview.id} className="border border-border group hover:border-accent/30 transition-all duration-300 flex flex-col">
+                <InteractivePreview id={preview.id} signedUrl={preview.signedUrl} />
+                <div className="p-4 space-y-2 border-t border-border mt-auto relative z-10 bg-background">
                   <div className="flex items-center justify-between">
                     <p className="text-xs font-medium">
                       {preview.quoteName || "Senza quote"}

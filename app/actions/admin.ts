@@ -1,6 +1,6 @@
 "use server";
 
-import { createServerClient, createServiceRoleClient } from "@/app/lib/supabase/server";
+import { createServerClient } from "@/app/lib/supabase/server";
 import { createServiceClient } from "@/app/lib/supabase/service";
 import type { QuoteStatus } from "@/app/lib/supabase/types";
 
@@ -71,7 +71,7 @@ export async function adminGetAllQuotes(filters?: { status?: QuoteStatus | strin
 
 export async function adminUpdateQuoteStatus(quoteId: string, status: QuoteStatus) {
   await verifyAdmin();
-  const serviceClient = await createServiceRoleClient();
+  const serviceClient = createServiceClient();
 
   const { error } = await serviceClient
     .from("quotes")
@@ -84,7 +84,6 @@ export async function adminUpdateQuoteStatus(quoteId: string, status: QuoteStatu
 
 export async function adminGetAllPreviews() {
   const { supabase } = await verifyAdmin();
-  const serviceClient = await createServiceRoleClient();
 
   const { data, error } = await supabase
     .from("previews")

@@ -68,7 +68,6 @@ export default function AIPreviewStep({
   addOnsData,
   initialData,
   persistedImage,
-  persistedPreviewId,
   onImageChange,
   onPreviewIdChange,
   onProceed,
@@ -90,7 +89,6 @@ export default function AIPreviewStep({
 
   const [state, setState] = useState<GenerationState>(persistedImage ? "complete" : "idle");
   const [imageBase64, setImageBase64Local] = useState<string | null>(persistedImage ?? null);
-  const [previewId, setPreviewIdLocal] = useState<string | null>(persistedPreviewId ?? null);
 
   const setImageBase64 = useCallback((img: string | null) => {
     setImageBase64Local(img);
@@ -98,7 +96,6 @@ export default function AIPreviewStep({
   }, [onImageChange]);
 
   const setPreviewId = useCallback((id: string | null) => {
-    setPreviewIdLocal(id);
     onPreviewIdChange?.(id);
   }, [onPreviewIdChange]);
   const [errorMsg, setErrorMsg] = useState("");

@@ -1,6 +1,7 @@
 "use server";
 
-import { createServerClient, createServiceRoleClient } from "@/app/lib/supabase/server";
+import { createServerClient } from "@/app/lib/supabase/server";
+import { createServiceClient } from "@/app/lib/supabase/service";
 import { headers } from "next/headers";
 import type { QuoteStatus } from "@/app/lib/supabase/types";
 
@@ -41,7 +42,7 @@ export async function createQuote(input: CreateQuoteInput) {
     return { success: false, error: "Selezione pacchetto mancante" };
   }
 
-  const supabase = await createServiceRoleClient();
+  const supabase = createServiceClient();
   const headerStore = await headers();
 
   // Try to get the current user (may be null for anonymous)
@@ -200,18 +201,21 @@ export async function createDraftQuote(input: CreateDraftQuoteInput, previewId?:
     return { success: false as const, error: error.message };
   }
 
-  // Link preview to the newly created draft quote
-  const serviceClient = await createServiceRoleClient();
+  // Link preview to the newly created draft quote (cookie-free client for reliability)
+  const linkClient = createServiceClient();
   if (previewId) {
-    await serviceClient
+    const { error: linkError } = await linkClient
       .from("previews")
-      .update({ quote_id: data.id })
+      .update({ quote_id: data.id, user_id: user.id })
       .eq("id", previewId)
-      .eq("user_id", user.id);
+      .is("quote_id", null);
+    if (linkError) {
+      console.error("Failed to link preview to quote:", linkError);
+    }
   } else {
     // Fallback: link recent unlinked previews for this user (within last 10 min)
     const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
-    await serviceClient
+    await linkClient
       .from("previews")
       .update({ quote_id: data.id })
       .eq("user_id", user.id)
@@ -275,14 +279,14 @@ export async function completeDraftQuote(
   }
 
   // Ensure previews are linked — fallback for cases where linking failed earlier
-  const serviceClient = await createServiceRoleClient();
-  const { data: linkedPreviews } = await serviceClient
+  const linkClient = createServiceClient();
+  const { data: linkedPreviews } = await linkClient
     .from("previews")
     .select("id")
     .eq("quote_id", quoteId);
 
   if (!linkedPreviews || linkedPreviews.length === 0) {
-    const { data: quoteData } = await serviceClient
+    const { data: quoteData } = await linkClient
       .from("quotes")
       .select("created_at")
       .eq("id", quoteId)
@@ -293,7 +297,7 @@ export async function completeDraftQuote(
       const windowStart = new Date(quoteTime - 15 * 60 * 1000).toISOString();
       const windowEnd = new Date(quoteTime + 5 * 60 * 1000).toISOString();
 
-      await serviceClient
+      await linkClient
         .from("previews")
         .update({ quote_id: quoteId })
         .eq("user_id", user.id)
@@ -322,7 +326,7 @@ export async function updateQuoteStatus(id: string, status: QuoteStatus) {
     return { success: false, error: "Non autorizzato" };
   }
 
-  const supabase = await createServiceRoleClient();
+  const supabase = createServiceClient();
 
   const { error } = await supabase
     .from("quotes")

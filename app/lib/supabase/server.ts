@@ -29,22 +29,3 @@ export async function createServerClient() {
     }
   );
 }
-
-export async function createServiceRoleClient() {
-  const cookieStore = await cookies();
-
-  return _createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll() {
-          // Service role client doesn't need to set cookies
-        },
-      },
-    }
-  );
-}

@@ -1,8 +1,9 @@
-import { createServerClient, createServiceRoleClient } from "@/app/lib/supabase/server";
+import { createServerClient } from "@/app/lib/supabase/server";
 import { createServiceClient } from "@/app/lib/supabase/service";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { QuoteStatus } from "@/app/lib/supabase/types";
+import { InteractivePreview } from "@/app/components/InteractivePreview";
 
 const statusLabels: Record<QuoteStatus, string> = {
   draft: "Lead",
@@ -57,9 +58,11 @@ export default async function QuoteDetailPage({ params }: Props) {
 
   if (!quote) return notFound();
 
+  // Cookie-free client for all service-role operations (DB + storage)
+  const directClient = createServiceClient();
+
   // Get associated previews
-  const serviceClient = await createServiceRoleClient();
-  const { data: previews } = await serviceClient
+  const { data: previews } = await directClient
     .from("previews")
     .select("*")
     .eq("quote_id", quote.id)
@@ -73,7 +76,7 @@ export default async function QuoteDetailPage({ params }: Props) {
     const windowStart = new Date(quoteTime - 15 * 60 * 1000).toISOString();
     const windowEnd = new Date(quoteTime + 5 * 60 * 1000).toISOString();
 
-    const { data: fallbackPreviews } = await serviceClient
+    const { data: fallbackPreviews } = await directClient
       .from("previews")
       .select("*")
       .eq("user_id", quote.user_id)
@@ -85,18 +88,17 @@ export default async function QuoteDetailPage({ params }: Props) {
 
     // Auto-link found previews to this quote for future lookups
     if (previewData.length > 0) {
-      await serviceClient
+      await directClient
         .from("previews")
         .update({ quote_id: quote.id })
         .in("id", previewData.map((p) => p.id));
     }
   }
 
-  // Use cookie-free client for storage operations (signed URLs)
-  const storageClient = createServiceClient();
+  // Generate signed URLs for previews
   const previewsWithUrls = await Promise.all(
     previewData.map(async (preview) => {
-      const { data: urlData } = await storageClient.storage
+      const { data: urlData } = await directClient.storage
         .from("previews")
         .createSignedUrl(preview.storage_path, 3600);
       return { ...preview, signedUrl: urlData?.signedUrl ?? null };
@@ -352,21 +354,9 @@ export default async function QuoteDetailPage({ params }: Props) {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {previewsWithUrls.map((preview) => (
-              <div key={preview.id} className="border border-border group">
-                {preview.signedUrl ? (
-                  <img
-                    src={preview.signedUrl}
-                    alt="AI Preview"
-                    className="w-full aspect-video object-cover"
-                  />
-                ) : (
-                  <div className="w-full aspect-video bg-surface flex items-center justify-center">
-                    <span className="text-xs text-muted">
-                      Immagine non disponibile
-                    </span>
-                  </div>
-                )}
-                <div className="p-3">
+              <div key={preview.id} className="border border-border flex flex-col">
+                <InteractivePreview id={preview.id} signedUrl={preview.signedUrl} />
+                <div className="p-3 border-t border-border mt-auto">
                   <p className="text-[10px] text-muted">
                     {new Date(preview.created_at).toLocaleDateString("it-IT", {
                       day: "numeric",

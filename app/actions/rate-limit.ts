@@ -1,6 +1,6 @@
 "use server";
 
-import { createServiceRoleClient } from "@/app/lib/supabase/server";
+import { createServiceClient } from "@/app/lib/supabase/service";
 
 // In-memory fallback when DB is unreachable
 const fallbackCounts = new Map<string, { count: number; resetAt: number }>();
@@ -25,7 +25,7 @@ export async function checkRateLimit(
   maxCount: number
 ): Promise<{ allowed: boolean }> {
   try {
-    const supabase = await createServiceRoleClient();
+    const supabase = createServiceClient();
 
     const { data, error } = await supabase.rpc(
       "check_and_increment_rate_limit",
