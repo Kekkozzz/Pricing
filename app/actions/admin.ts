@@ -1,6 +1,7 @@
 "use server";
 
 import { createServerClient, createServiceRoleClient } from "@/app/lib/supabase/server";
+import { createServiceClient } from "@/app/lib/supabase/service";
 import type { QuoteStatus } from "@/app/lib/supabase/types";
 
 async function verifyAdmin() {
@@ -107,9 +108,10 @@ export async function adminGetAllPreviews() {
     : { data: [] };
   const quoteMap = new Map((quotes ?? []).map((q) => [q.id, q]));
 
+  const storageClient = createServiceClient();
   const previewsWithUrls = await Promise.all(
     (data ?? []).map(async (preview) => {
-      const { data: urlData } = await serviceClient.storage
+      const { data: urlData } = await storageClient.storage
         .from("previews")
         .createSignedUrl(preview.storage_path, 3600);
       const profile = preview.user_id ? profileMap.get(preview.user_id) : null;

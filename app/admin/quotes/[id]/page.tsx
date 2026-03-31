@@ -1,4 +1,5 @@
 import { createServerClient, createServiceRoleClient } from "@/app/lib/supabase/server";
+import { createServiceClient } from "@/app/lib/supabase/service";
 import { requireAdmin } from "@/app/lib/auth/admin";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -76,9 +77,11 @@ export default async function AdminQuoteDetailPage({ params }: Props) {
     }
   }
 
+  // Use cookie-free client for storage operations (signed URLs)
+  const storageClient = createServiceClient();
   const previewsWithUrls = await Promise.all(
     previewData.map(async (preview) => {
-      const { data: urlData } = await serviceClient.storage
+      const { data: urlData } = await storageClient.storage
         .from("previews")
         .createSignedUrl(preview.storage_path, 3600);
       return { ...preview, signedUrl: urlData?.signedUrl ?? null };

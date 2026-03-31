@@ -1,6 +1,7 @@
 "use server";
 
-import { createServerClient, createServiceRoleClient } from "@/app/lib/supabase/server";
+import { createServerClient } from "@/app/lib/supabase/server";
+import { createServiceClient } from "@/app/lib/supabase/service";
 import { savePreviewCore } from "@/app/lib/previews/save";
 
 export async function savePreview(
@@ -20,8 +21,6 @@ export async function getMyPreviews() {
 
   if (!user) return { previews: [], error: "Non autenticato" };
 
-  const serviceClient = await createServiceRoleClient();
-
   const { data, error } = await supabase
     .from("previews")
     .select("*")
@@ -30,10 +29,11 @@ export async function getMyPreviews() {
 
   if (error) return { previews: [], error: error.message };
 
-  // Generate signed URLs for each preview
+  // Generate signed URLs for each preview (cookie-free client for storage)
+  const storageClient = createServiceClient();
   const previewsWithUrls = await Promise.all(
     (data ?? []).map(async (preview) => {
-      const { data: urlData } = await serviceClient.storage
+      const { data: urlData } = await storageClient.storage
         .from("previews")
         .createSignedUrl(preview.storage_path, 3600);
 

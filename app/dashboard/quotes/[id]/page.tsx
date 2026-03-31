@@ -1,4 +1,5 @@
 import { createServerClient, createServiceRoleClient } from "@/app/lib/supabase/server";
+import { createServiceClient } from "@/app/lib/supabase/service";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { QuoteStatus } from "@/app/lib/supabase/types";
@@ -91,10 +92,11 @@ export default async function QuoteDetailPage({ params }: Props) {
     }
   }
 
-  // Generate signed URLs for previews
+  // Use cookie-free client for storage operations (signed URLs)
+  const storageClient = createServiceClient();
   const previewsWithUrls = await Promise.all(
     previewData.map(async (preview) => {
-      const { data: urlData } = await serviceClient.storage
+      const { data: urlData } = await storageClient.storage
         .from("previews")
         .createSignedUrl(preview.storage_path, 3600);
       return { ...preview, signedUrl: urlData?.signedUrl ?? null };

@@ -67,18 +67,45 @@ export async function GET() {
     checks.quotesError = String(e);
   }
 
-  // 5. Check storage files in bucket (if exists)
+  // 5. Check storage files and signed URLs for each preview record
   if (checks.previewsBucketExists || checks.bucketCreated) {
     try {
       const { data: files, error } = await service.storage
         .from("previews")
-        .list("", { limit: 10 });
+        .list("users", { limit: 10 });
 
-      checks.storageFiles = files?.map((f) => f.name) ?? [];
+      checks.storageTopLevel = files?.map((f) => ({ name: f.name, type: f.metadata ? "file" : "folder" })) ?? [];
       checks.storageError = error?.message ?? null;
     } catch (e) {
       checks.storageError = String(e);
     }
+
+    // For each preview record, check if the file exists and signed URL works
+    const previewRecords = (checks.previewRecords as Array<{ id: string; storage_path: string }>) ?? [];
+    const storageChecks = await Promise.all(
+      previewRecords.map(async (p) => {
+        // Try to get signed URL
+        const { data: urlData, error: urlErr } = await service.storage
+          .from("previews")
+          .createSignedUrl(p.storage_path, 3600);
+
+        // Try to check if file exists by downloading first byte
+        const { data: fileData, error: downloadErr } = await service.storage
+          .from("previews")
+          .download(p.storage_path);
+
+        return {
+          previewId: p.id,
+          storagePath: p.storage_path,
+          signedUrl: urlData?.signedUrl ? urlData.signedUrl.slice(0, 80) + "..." : null,
+          signedUrlError: urlErr?.message ?? null,
+          fileExists: !!fileData,
+          fileSize: fileData?.size ?? null,
+          downloadError: downloadErr?.message ?? null,
+        };
+      })
+    );
+    checks.storageChecks = storageChecks;
   }
 
   return Response.json(checks, { status: 200 });
