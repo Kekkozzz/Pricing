@@ -9,7 +9,9 @@ export async function savePreviewCore(
 ): Promise<{ success: boolean; previewId?: string; signedUrl?: string; error?: string }> {
   const supabase = createServiceClient();
 
-  const buffer = Buffer.from(base64Data, "base64");
+  // Strip data URI prefix if present (e.g. "data:image/png;base64,...")
+  const raw = base64Data.includes(",") ? base64Data.split(",")[1] : base64Data;
+  const buffer = Buffer.from(raw, "base64");
   const fileSize = buffer.length;
 
   const uuid = crypto.randomUUID();
